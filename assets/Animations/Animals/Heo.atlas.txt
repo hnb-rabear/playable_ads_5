@@ -1,0 +1,20 @@
+
+Heo.png
+size: 177,314
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+1
+  rotate: false
+  xy: 2, 130
+  size: 173, 183
+  orig: 182, 189
+  offset: 9, 6
+  index: -1
+2
+  rotate: false
+  xy: 2, 3
+  size: 131, 125
+  orig: 133, 127
+  offset: 1, 1
+  index: -1
