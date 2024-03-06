@@ -1,4 +1,4 @@
-import { _decorator, CCBoolean, CCInteger, Component, Enum, Node, Vec3 } from 'cc';
+import { _decorator, CCBoolean, CCInteger, Component, Enum, math, Node, Vec3 } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('PathFollowing')
@@ -18,13 +18,17 @@ export class PathFollowing extends Component {
         return this.m_direction;
     }
 
-    protected m_id: number = 0;
-    public getValue(): number {
-        return this.m_id;
+    protected m_index: number = 0;
+    public get index(): number {
+        return this.m_index;
     }
 
     protected m_init: boolean = false;
     protected m_curStopIndex: number = 0;
+    protected m_destinationIndex: number = 0;
+    protected m_delay: number = 0;
+
+    public onReached: () => void;
 
     protected start(): void {
         if (!this.m_init)
@@ -34,23 +38,44 @@ export class PathFollowing extends Component {
     protected update(deltaTime: number): void {
         if (!this.m_autoMove)
             return;
-        if (this.reached || this.m_path.length === 0 || this.m_moveSpeed <= 0) {
-            return;
-        }
         const reached = this.move(deltaTime);
-        if (reached) {
+        if (reached && !this.m_reached) {
             this.m_reached = true;
+            this.onReached?.();
         }
     }
 
-    public init(id: number, path: Node[], autoMove: boolean): void {
-        this.m_id = id;
+    public init(idx: number, path: Node[], autoMove: boolean, destinationIdx: number = 0): void {
+        this.m_index = idx;
         this.m_path = path;
         this.m_autoMove = autoMove;
         this.m_init = true;
+        this.m_reached = false;
+        this.m_destinationIndex = destinationIdx;
+        if (this.m_path.length > 0)
+            this.node.setWorldPosition(this.m_path[0].worldPosition);
+    }
+
+    public setDelay(delay: number): void {
+        this.m_delay = delay;
     }
 
     protected move(deltaTime: number): boolean {
+        if (this.m_path.length === 0 || this.m_moveSpeed <= 0)
+            return false;
+
+        const destinationIdx = this.m_destinationIndex > 0
+            ? math.clamp(this.m_destinationIndex, 0, this.m_path.length - 1)
+            : this.m_path.length - 1;
+
+        if (this.m_curStopIndex > destinationIdx)
+            return true;
+
+        if (this.m_delay > 0) {
+            this.m_delay -= deltaTime;
+            return false;
+        }
+
         const index = this.m_curStopIndex;
         let currentTarget = this.m_path[index];
         let direction = Vec3.subtract(new Vec3(), currentTarget.worldPosition, this.node.worldPosition).normalize();
@@ -60,7 +85,7 @@ export class PathFollowing extends Component {
         if (Vec3.subtract(new Vec3(), currentTarget.worldPosition, this.node.worldPosition).length() < this.m_moveSpeed * deltaTime) {
             this.node.setWorldPosition(currentTarget.worldPosition);
             this.m_curStopIndex = index + 1;
-            if (this.m_curStopIndex === this.m_path.length) {
+            if (this.m_curStopIndex > destinationIdx) {
                 // reach the end of the path
                 return true;
             }
@@ -78,5 +103,9 @@ export class PathFollowing extends Component {
         if (this.m_direction === direction)
             return;
         this.m_direction = direction;
+    }
+
+    public setDestinationIndex(idx: number) {
+        this.m_destinationIndex = math.clamp(idx, 0, this.m_path.length - 1);
     }
 }
