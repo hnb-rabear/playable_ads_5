@@ -1,13 +1,14 @@
 import { _decorator, CCBoolean, Component, Layout, Node, tween, UITransform, Vec3, Widget } from 'cc';
 import { Draggable } from './Core/Draggable';
+import { CattleMenuItem } from './CattleMenuItem';
 const { ccclass, property, executeInEditMode } = _decorator;
 
 @ccclass('CattleMenu')
 export class CattleMenu extends Component {
-    @property(Draggable) public pig: Draggable = null;
-    @property(Draggable) public cow: Draggable = null;
-    @property(Draggable) public chicken: Draggable = null;
-    @property(Draggable) public sheep: Draggable = null;
+    @property(CattleMenuItem) public pig: CattleMenuItem = null;
+    @property(CattleMenuItem) public cow: CattleMenuItem = null;
+    @property(CattleMenuItem) public chicken: CattleMenuItem = null;
+    @property(CattleMenuItem) public sheep: CattleMenuItem = null;
     @property(CCBoolean) protected m_horizontalScreen: boolean = false;
 
     protected onEnable(): void {

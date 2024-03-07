@@ -212,4 +212,8 @@ export class PathFollowing extends Component {
     public setAutoMove(autoMove: boolean) {
         this.m_autoMove = autoMove;
     }
+
+    public setPathWorldPos(pathWorldPos: Vec3[]) {
+        this.m_pathWorldPos = pathWorldPos;
+    }
 }

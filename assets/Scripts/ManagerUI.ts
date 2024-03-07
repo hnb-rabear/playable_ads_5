@@ -11,7 +11,7 @@ export class ManagerUI extends Component {
         return ManagerUI.m_instance;
     }
 
-    @property(Camera) protected m_camera: Camera;
+    @property(Camera) public camera: Camera;
     @property(CattleMenu) protected m_menu: CattleMenu;
     @property(PointerDragging) protected m_pointerDragging: PointerDragging = null;
 
@@ -23,26 +23,24 @@ export class ManagerUI extends Component {
 
     protected start(): void {
         this.m_menu.node.active = false;
+
+        window.addEventListener('resize', () => {
+            // The window width has changed
+            if (this.m_pointerDragging.node.active)
+                this.refreshPointerPath();
+        });
+        this.m_pointerDragging.node.active = false;
     }
 
     public async showFarmCowMenu() {
         await new Promise(resolve => setTimeout(resolve, 500));
 
-        const pointerPath: Vec3[] = [this.m_menu.cow.node.worldPosition];
-        // Convert animals nodes to screen point and to world position of ui camera
-        const animals = Manager.instance.getCowFarm().getAnimals();
-        animals.forEach(animal => {
-            const animalNode = animal.node;
-            const screenPosition = Manager.instance.camera.worldToScreen(animalNode.worldPosition);
-            const worldPosition = this.m_camera.screenToWorld(screenPosition);
-            pointerPath.push(worldPosition);
-        });
-
         this.m_menu.node.active = true;
         this.m_menu.showFarmCowMenu();
-        this.m_pointerDragging.setSptDisplay(this.m_menu.cow.node.getComponent(Sprite).spriteFrame);
-        this.m_pointerDragging.initPathWorldPos(0, pointerPath, true);
-        this.m_pointerDragging.moveTo();
+
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        this.createPointer();
     }
 
     public hideFarmMenu() {
@@ -56,6 +54,35 @@ export class ManagerUI extends Component {
 
     protected isHorizontalScreen() {
         return window.innerWidth >= window.innerHeight;
+    }
+
+    protected createPointer() {
+        const pointerPath: Vec3[] = [this.m_menu.cow.node.worldPosition];
+        // Convert animals nodes to screen point and to world position of ui camera
+        const animals = Manager.instance.getCowFarm().getAnimals();
+        animals.forEach(animal => {
+            const animalNode = animal.pointerTarget;
+            const screenPos = Manager.instance.camera.worldToScreen(animalNode.worldPosition);
+            const worldPos = this.camera.screenToWorld(screenPos);
+            pointerPath.push(worldPos);
+        });
+
+        this.m_pointerDragging.node.active = true;
+        this.m_pointerDragging.setSptDisplay(this.m_menu.cow.node.getComponent(Sprite).spriteFrame);
+        this.m_pointerDragging.initPathWorldPos(0, pointerPath, true);
+        this.m_pointerDragging.moveTo();
+    }
+
+    protected refreshPointerPath() {
+        const pointerPath: Vec3[] = [this.m_menu.cow.node.worldPosition];
+        const animals = Manager.instance.getCowFarm().getAnimals();
+        animals.forEach(animal => {
+            const animalNode = animal.pointerTarget;
+            const screenPosition = Manager.instance.camera.worldToScreen(animalNode.worldPosition);
+            const worldPosition = this.camera.screenToWorld(screenPosition);
+            pointerPath.push(worldPosition);
+        });
+        this.m_pointerDragging.setPathWorldPos(pointerPath);
     }
 }
 

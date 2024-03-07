@@ -4,6 +4,7 @@ import { PathFollowing } from './Core/PathFollowing';
 import { IsometricZOrderUpdater } from './Core/IsometricZOrderUpdater';
 import { ManagerUI } from './ManagerUI';
 import { AnimalFarm } from './AnimalFarm';
+import { AnimalState } from './Animal';
 const { ccclass, property } = _decorator;
 
 @ccclass('Manager')
@@ -66,6 +67,30 @@ export class Manager extends Component {
         this.m_isometricZOrderUpdater.updateSortingOrder();
     }
 
+    public onDragMoveCattleMenuItem(id: string, uiWorldPos: Vec3) {
+
+        const screenPos = ManagerUI.instance.camera.worldToScreen(uiWorldPos);
+        const worldPos = this.camera.screenToWorld(screenPos);
+
+        if (id === 'cow') {
+            const cowFarm = Manager.instance.getCowFarm();
+            const animals = cowFarm.getAnimals();
+            for (let i = 0; i < animals.length; i++) {
+                const animal = animals[i];
+                if (animal.hasAnimal())
+                    continue;
+
+                const pointerTarget = animal.pointerTarget;
+                const distance = Vec3.distance(pointerTarget.worldPosition, worldPos);
+                if (distance < 70)
+                    animal.setState(AnimalState.Small);
+            }
+        }
+    }
+
+    public onDragEndCattleMenuItem(id: string, uiWorldPos: Vec3) {
+        console.log(id + ' ' + uiWorldPos);
+    }
 
     protected moveToSecondStop() {
         const destinationIdx = this.m_stops.indexOf(this.m_secondStop);
