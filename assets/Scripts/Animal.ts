@@ -1,4 +1,4 @@
-import { _decorator, CCInteger, Component, Node, sp } from 'cc';
+import { _decorator, CCInteger, Color, Component, Node, sp, tween } from 'cc';
 const { ccclass, property } = _decorator;
 
 export enum AnimalState {
@@ -32,10 +32,20 @@ export class Animal extends Component {
             case AnimalState.Small:
                 this.m_animSmallForm.node.active = true;
                 this.m_animBigForm.node.active = false;
+                this.m_animSmallForm.setAnimation(0, 'dung', true);
                 break;
             case AnimalState.Big:
-                this.m_animSmallForm.node.active = false;
-                this.m_animBigForm.node.active = true;
+                if (this.m_animSmallForm.node.active) {
+                    tween(this.m_animSmallForm)
+                        .to(0.5, { color: Color.TRANSPARENT }).start();
+                    this.m_animBigForm.color.set(Color.TRANSPARENT);
+                    tween(this.m_animBigForm)
+                        .to(0.5, { color: Color.WHITE }).start();
+                } else {
+                    this.m_animSmallForm.node.active = false;
+                    this.m_animBigForm.node.active = true;
+                    this.m_animSmallForm.setAnimation(0, 'an', true);
+                }
                 break;
             default:
                 this.m_animSmallForm.node.active = false;

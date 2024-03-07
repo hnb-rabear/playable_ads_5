@@ -15,6 +15,13 @@ export class AnimalFarm extends Component {
     public getAnimals() {
         return this.m_animals;
     }
+
+    public hasEmptySlot() {
+        for (let i = 0; i < this.m_animals.length; i++) {
+            if (!this.m_animals[i].hasAnimal())
+                return true;
+        }
+    }
 }
 
 

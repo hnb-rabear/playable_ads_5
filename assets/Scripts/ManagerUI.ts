@@ -1,5 +1,5 @@
 import { _decorator, Camera, Component, Node, Sprite, Vec3 } from 'cc';
-import { CattleMenu } from './CattleMenu';
+import { CattleMenu, MenuState } from './CattleMenu';
 import { PointerDragging } from './Core/PointerDragging';
 import { Manager } from './Manager';
 const { ccclass, property } = _decorator;
@@ -26,25 +26,108 @@ export class ManagerUI extends Component {
 
         window.addEventListener('resize', () => {
             // The window width has changed
-            if (this.m_pointerDragging.node.active)
-                this.refreshPointerPath();
+            if (this.m_menu.state === MenuState.Animal)
+                this.refreshCowFarmAddingGuide();
+            else if (this.m_menu.state === MenuState.Feed)
+                this.refreshCowFarmFeedingGuide();
+            else if (this.m_menu.state === MenuState.Harvest)
+                this.refreshCowFarmHarvestingGuide();
         });
         this.m_pointerDragging.node.active = false;
     }
 
-    public async showFarmCowMenu() {
+    //==================================================
+
+    public async showCowFarmMenu() {
         await new Promise(resolve => setTimeout(resolve, 500));
 
         this.m_menu.node.active = true;
-        this.m_menu.showFarmCowMenu();
+        this.m_menu.showCowFarmMenu();
 
         await new Promise(resolve => setTimeout(resolve, 500));
 
-        this.createPointer();
+        this.showCowFarmAddingGuide();
     }
 
-    public hideFarmMenu() {
-        this.m_menu.node.active = false;
+    public showCowFarmAddingGuide() {
+        const pointerPath: Vec3[] = [this.m_menu.cow.node.worldPosition];
+        // Convert animals nodes to screen point and to world position of ui camera
+        const animals = Manager.instance.getCowFarm().getAnimals();
+        let hasAnimal = false;
+        animals.forEach(animal => {
+            if (!animal.hasAnimal()) {
+                const animalNode = animal.pointerTarget;
+                const screenPos = Manager.instance.camera.worldToScreen(animalNode.worldPosition);
+                const worldPos = this.camera.screenToWorld(screenPos);
+                pointerPath.push(worldPos);
+                hasAnimal = true;
+            }
+        });
+        if (hasAnimal) {
+            this.m_pointerDragging.node.active = true;
+            this.m_pointerDragging.setSptDisplay(this.m_menu.cow.node.getComponent(Sprite).spriteFrame);
+            this.m_pointerDragging.initPathWorldPos(0, pointerPath, true);
+            this.m_pointerDragging.moveTo();
+        }
+    }
+
+    protected refreshCowFarmAddingGuide() {
+        if (!this.m_pointerDragging.node.active)
+            return;
+        const pointerPath: Vec3[] = [this.m_menu.cow.node.worldPosition];
+        const animals = Manager.instance.getCowFarm().getAnimals();
+        let hasAnimal = false;
+        animals.forEach(animal => {
+            if (!animal.hasAnimal()) {
+                const animalNode = animal.pointerTarget;
+                const screenPosition = Manager.instance.camera.worldToScreen(animalNode.worldPosition);
+                const worldPosition = this.camera.screenToWorld(screenPosition);
+                pointerPath.push(worldPosition);
+                hasAnimal = true;
+            }
+        });
+        this.m_pointerDragging.setPathWorldPos(pointerPath);
+        if (!hasAnimal)
+            this.m_pointerDragging.node.active = false;
+    }
+
+    //==================================================
+
+    public async showCowFarmFodderMenu() {
+        this.m_menu.setState(MenuState.Feed);
+
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        this.showCowFarmFeedingGuide();
+    }
+
+    protected showCowFarmFeedingGuide() {
+    }
+
+    protected refreshCowFarmFeedingGuide() {
+    }
+
+    //==================================================
+
+    public async showCowFarmHarvestMenu() {
+        this.m_menu.setState(MenuState.Harvest);
+
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        this.showCowFarmHarvestingGuide();
+    }
+
+    protected showCowFarmHarvestingGuide() {
+
+    }
+
+    protected refreshCowFarmHarvestingGuide() {
+    }
+
+    //==================================================
+
+    public hidePointer() {
+        this.m_pointerDragging.node.active = false;
     }
 
     public async showFarmChickenMenu() {
@@ -54,35 +137,6 @@ export class ManagerUI extends Component {
 
     protected isHorizontalScreen() {
         return window.innerWidth >= window.innerHeight;
-    }
-
-    protected createPointer() {
-        const pointerPath: Vec3[] = [this.m_menu.cow.node.worldPosition];
-        // Convert animals nodes to screen point and to world position of ui camera
-        const animals = Manager.instance.getCowFarm().getAnimals();
-        animals.forEach(animal => {
-            const animalNode = animal.pointerTarget;
-            const screenPos = Manager.instance.camera.worldToScreen(animalNode.worldPosition);
-            const worldPos = this.camera.screenToWorld(screenPos);
-            pointerPath.push(worldPos);
-        });
-
-        this.m_pointerDragging.node.active = true;
-        this.m_pointerDragging.setSptDisplay(this.m_menu.cow.node.getComponent(Sprite).spriteFrame);
-        this.m_pointerDragging.initPathWorldPos(0, pointerPath, true);
-        this.m_pointerDragging.moveTo();
-    }
-
-    protected refreshPointerPath() {
-        const pointerPath: Vec3[] = [this.m_menu.cow.node.worldPosition];
-        const animals = Manager.instance.getCowFarm().getAnimals();
-        animals.forEach(animal => {
-            const animalNode = animal.pointerTarget;
-            const screenPosition = Manager.instance.camera.worldToScreen(animalNode.worldPosition);
-            const worldPosition = this.camera.screenToWorld(screenPosition);
-            pointerPath.push(worldPosition);
-        });
-        this.m_pointerDragging.setPathWorldPos(pointerPath);
     }
 }
 

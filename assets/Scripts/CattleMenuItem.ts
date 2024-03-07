@@ -1,6 +1,7 @@
 import { _decorator, CCInteger, CCString, Component, EventTouch, Node, Vec2, Vec3 } from 'cc';
 import { Draggable } from './Core/Draggable';
 import { Manager } from './Manager';
+import { ManagerUI } from './ManagerUI';
 const { ccclass, property } = _decorator;
 
 @ccclass('CattleMenuItem')
@@ -13,11 +14,13 @@ export class CattleMenuItem extends Draggable {
     protected onTouchMove(event: EventTouch): void {
         super.onTouchMove(event);
         this.onDragMove && this.onDragMove(this.id, this.m_displayItem.worldPosition);
+
         Manager.instance.onDragMoveCattleMenuItem(this.id, this.m_displayItem.worldPosition);
     }
 
     protected onTouchEnd(event: EventTouch): void {
         this.onDragEnd && this.onDragEnd(this.id, this.m_displayItem.worldPosition);
+
         Manager.instance.onDragEndCattleMenuItem(this.id, this.m_displayItem.worldPosition);
 
         super.onTouchEnd(event);

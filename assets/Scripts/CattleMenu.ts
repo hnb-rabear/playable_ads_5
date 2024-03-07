@@ -1,15 +1,29 @@
 import { _decorator, CCBoolean, Component, Layout, Node, tween, UITransform, Vec3, Widget } from 'cc';
-import { Draggable } from './Core/Draggable';
 import { CattleMenuItem } from './CattleMenuItem';
+import { MenuBar } from './MenuBar';
 const { ccclass, property, executeInEditMode } = _decorator;
 
+export enum MenuState {
+    None,
+    Animal,
+    Feed,
+    Harvest
+}
+
 @ccclass('CattleMenu')
-export class CattleMenu extends Component {
+export class CattleMenu extends MenuBar {
     @property(CattleMenuItem) public pig: CattleMenuItem = null;
     @property(CattleMenuItem) public cow: CattleMenuItem = null;
     @property(CattleMenuItem) public chicken: CattleMenuItem = null;
     @property(CattleMenuItem) public sheep: CattleMenuItem = null;
-    @property(CCBoolean) protected m_horizontalScreen: boolean = false;
+    @property(CattleMenuItem) public fodder: CattleMenuItem = null;
+    @property(CattleMenuItem) public basket: CattleMenuItem = null;
+
+    protected m_animalId: string = null;
+    protected m_state: MenuState = MenuState.None;
+    public get state() {
+        return this.m_state;
+    }
 
     protected onEnable(): void {
         this.node.setScale(0, 0, 0);
@@ -18,69 +32,24 @@ export class CattleMenu extends Component {
             .start();
     }
 
-    protected start(): void {
-        const widget = this.getComponent(Widget);
-        widget.alignMode = Widget.AlignMode.ALWAYS;
-
-        this.refreshScreenRatio();
-        window.addEventListener('resize', () => {
-            // The window width has changed
-            this.refreshScreenRatio();
-        });
-        this.refreshScreenRatio();
-    }
-
-    public showFarmCowMenu() {
-        this.pig.node.active = true;
-        this.cow.node.active = true;
-        this.chicken.node.active = false;
-        this.sheep.node.active = false;
+    public showCowFarmMenu() {
+        this.m_animalId = "cow";
+        this.setState(MenuState.Animal);
     }
 
     public showFarmChickenMenu() {
-        this.pig.node.active = true;
-        this.cow.node.active = false;
-        this.chicken.node.active = true;
-        this.sheep.node.active = true;
+        this.m_animalId = "chicken";
+        this.setState(MenuState.Animal);
     }
 
-    protected refreshScreenRatio() {
-        const isHorizontal = window.innerWidth >= window.innerHeight;
-
-        const layout = this.getComponent(Layout);
-        layout.padding = 50;
-        layout.paddingLeft = 50;
-        layout.paddingRight = 50;
-        layout.paddingTop = 50;
-        layout.paddingBottom = 50;
-        layout.spacingX = 50;
-        layout.spacingY = 50;
-        const uiTransform = this.getComponent(UITransform);
-        const widget = this.getComponent(Widget);
-        if (isHorizontal) {
-            uiTransform.contentSize.set(300, 300);
-            layout.type = Layout.Type.VERTICAL;
-            // Left Center Right Horizontal_Stretch
-            widget.isAbsoluteRight = false;
-            widget.isAlignRight = true;
-            widget.right = 0.1;
-            // Top Middle Bottom Vertical_Stretch
-            widget.isAbsoluteVerticalCenter = false;
-            widget.isAlignVerticalCenter = true;
-            widget.verticalCenter = 0;
-        }
-        else {
-            uiTransform.contentSize.set(280, 280);
-            layout.type = Layout.Type.HORIZONTAL;
-            // Left Center Right Horizontal_Stretch
-            widget.isAbsoluteHorizontalCenter = false;
-            widget.isAlignHorizontalCenter = true;
-            widget.horizontalCenter = 0;
-            // Top Middle Bottom Vertical_Stretch
-            widget.isAbsoluteBottom = false;
-            widget.isAlignBottom = true;
-            widget.bottom = 0.1;
-        }
+    public setState(state: MenuState) {
+        this.m_state = state;
+        this.pig.node.active = state == MenuState.Animal && (this.m_animalId == "cow" || this.m_animalId == "chicken");
+        this.cow.node.active = state == MenuState.Animal && (this.m_animalId == "cow" || this.m_animalId == "chicken");
+        this.chicken.node.active = state == MenuState.Animal && this.m_animalId == "chicken";
+        this.sheep.node.active = state == MenuState.Animal && this.m_animalId == "chicken";
+        this.fodder.node.active = state == MenuState.Feed;
+        this.basket.node.active = state == MenuState.Harvest;
     }
 }
 

@@ -60,7 +60,7 @@ export class Manager extends Component {
             customer.onReached = () => {
                 if (i === this.m_customers.length - 1) {
                     reached = true;
-                    ManagerUI.instance.showFarmCowMenu();
+                    ManagerUI.instance.showCowFarmMenu();
                 }
             };
         }
@@ -73,8 +73,7 @@ export class Manager extends Component {
         const worldPos = this.camera.screenToWorld(screenPos);
 
         if (id === 'cow') {
-            const cowFarm = Manager.instance.getCowFarm();
-            const animals = cowFarm.getAnimals();
+            const animals = this.m_cowFarm.getAnimals();
             for (let i = 0; i < animals.length; i++) {
                 const animal = animals[i];
                 if (animal.hasAnimal())
@@ -82,14 +81,25 @@ export class Manager extends Component {
 
                 const pointerTarget = animal.pointerTarget;
                 const distance = Vec3.distance(pointerTarget.worldPosition, worldPos);
-                if (distance < 70)
+                if (distance < 70) {
                     animal.setState(AnimalState.Small);
+                    ManagerUI.instance.hidePointer();
+                }
             }
         }
     }
 
-    public onDragEndCattleMenuItem(id: string, uiWorldPos: Vec3) {
-        console.log(id + ' ' + uiWorldPos);
+    public async onDragEndCattleMenuItem(id: string, uiWorldPos: Vec3) {
+        if (id === 'cow') {
+            const hasEmptySlot = this.m_cowFarm.hasEmptySlot();
+            if (hasEmptySlot) {
+                ManagerUI.instance.showCowFarmAddingGuide();
+                return;
+            }
+
+            // Show food menu of cow farm
+            ManagerUI.instance.showCowFarmFodderMenu();
+        }
     }
 
     protected moveToSecondStop() {
