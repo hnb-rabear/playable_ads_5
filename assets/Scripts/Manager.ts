@@ -5,6 +5,7 @@ import { IsometricZOrderUpdater } from './Core/IsometricZOrderUpdater';
 import { ManagerUI } from './ManagerUI';
 import { AnimalFarm } from './AnimalFarm';
 import { AnimalState } from './Animal';
+import { MenuState } from './CattleMenu';
 const { ccclass, property } = _decorator;
 
 @ccclass('Manager')
@@ -91,14 +92,21 @@ export class Manager extends Component {
 
     public async onDragEndCattleMenuItem(id: string, uiWorldPos: Vec3) {
         if (id === 'cow') {
-            const hasEmptySlot = this.m_cowFarm.hasEmptySlot();
-            if (hasEmptySlot) {
-                ManagerUI.instance.showCowFarmAddingGuide();
-                return;
-            }
+            if (ManagerUI.instance.menu.state === MenuState.Animal) {
+                const hasEmptySlot = this.m_cowFarm.hasEmptyAnimalSlot();
+                if (hasEmptySlot) {
+                    ManagerUI.instance.showCowFarmAddingGuide();
+                    return;
+                }
 
-            // Show food menu of cow farm
-            ManagerUI.instance.showCowFarmFodderMenu();
+                // Show food menu of cow farm
+                ManagerUI.instance.showCowFarmFodderMenu();
+            }
+            else if (ManagerUI.instance.menu.state === MenuState.Feed) {
+                const hasEmptySlot = this.m_cowFarm.has;
+            }
+            else if (ManagerUI.instance.menu.state === MenuState.Harvest) {
+            }
         }
     }
 

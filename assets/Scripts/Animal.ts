@@ -12,9 +12,13 @@ export class Animal extends Component {
     @property(CCInteger) protected m_id: number = 0;
     @property(sp.Skeleton) protected m_animSmallForm: sp.Skeleton = null;
     @property(sp.Skeleton) protected m_animBigForm: sp.Skeleton = null;
-    @property(Node) protected m_food: Node = null;
+    @property(Node) protected m_fodder: Node = null;
     @property([Node]) protected m_products: Node[] = [];
     @property(Node) public pointerTarget: Node;
+
+    public get feedingNode() {
+        return this.m_fodder;
+    }
 
     public get id() {
         return this.m_id;
@@ -24,7 +28,7 @@ export class Animal extends Component {
         this.m_products.forEach(product => {
             product.active = false;
         });
-        this.m_food.active = false;
+        this.m_fodder.active = false;
     }
 
     public setState(state: AnimalState) {
@@ -56,6 +60,10 @@ export class Animal extends Component {
 
     public hasAnimal() {
         return this.m_animSmallForm.node.active || this.m_animBigForm.node.active;
+    }
+
+    public feed() {
+        return this.m_fodder.active;
     }
 }
 

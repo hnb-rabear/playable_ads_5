@@ -17,6 +17,10 @@ export class ManagerUI extends Component {
 
     protected m_horizontalScreen: boolean;
 
+    public get menu() {
+        return this.m_menu;
+    }
+
     protected onLoad(): void {
         ManagerUI.m_instance = this;
     }
@@ -53,17 +57,17 @@ export class ManagerUI extends Component {
         const pointerPath: Vec3[] = [this.m_menu.cow.node.worldPosition];
         // Convert animals nodes to screen point and to world position of ui camera
         const animals = Manager.instance.getCowFarm().getAnimals();
-        let hasAnimal = false;
+        let finished = true;
         animals.forEach(animal => {
             if (!animal.hasAnimal()) {
                 const animalNode = animal.pointerTarget;
                 const screenPos = Manager.instance.camera.worldToScreen(animalNode.worldPosition);
                 const worldPos = this.camera.screenToWorld(screenPos);
                 pointerPath.push(worldPos);
-                hasAnimal = true;
+                finished = false;
             }
         });
-        if (hasAnimal) {
+        if (!finished) {
             this.m_pointerDragging.node.active = true;
             this.m_pointerDragging.setSptDisplay(this.m_menu.cow.node.getComponent(Sprite).spriteFrame);
             this.m_pointerDragging.initPathWorldPos(0, pointerPath, true);
@@ -76,18 +80,18 @@ export class ManagerUI extends Component {
             return;
         const pointerPath: Vec3[] = [this.m_menu.cow.node.worldPosition];
         const animals = Manager.instance.getCowFarm().getAnimals();
-        let hasAnimal = false;
+        let finished = true;
         animals.forEach(animal => {
             if (!animal.hasAnimal()) {
                 const animalNode = animal.pointerTarget;
                 const screenPosition = Manager.instance.camera.worldToScreen(animalNode.worldPosition);
                 const worldPosition = this.camera.screenToWorld(screenPosition);
                 pointerPath.push(worldPosition);
-                hasAnimal = true;
+                finished = false;
             }
         });
         this.m_pointerDragging.setPathWorldPos(pointerPath);
-        if (!hasAnimal)
+        if (finished)
             this.m_pointerDragging.node.active = false;
     }
 
@@ -102,9 +106,42 @@ export class ManagerUI extends Component {
     }
 
     protected showCowFarmFeedingGuide() {
+        const pointerPath: Vec3[] = [this.m_menu.fodder.node.worldPosition];
+        const animals = Manager.instance.getCowFarm().getAnimals();
+        let finished = true;
+        animals.forEach(animal => {
+            if (!animal.feed()) {
+                const screenPos = Manager.instance.camera.worldToScreen(animal.feedingNode.worldPosition);
+                const worldPos = this.camera.screenToWorld(screenPos);
+                pointerPath.push(worldPos);
+                finished = false;
+            }
+        });
+        if (!finished) {
+            this.m_pointerDragging.node.active = true;
+            this.m_pointerDragging.setSptDisplay(this.m_menu.cow.node.getComponent(Sprite).spriteFrame);
+            this.m_pointerDragging.initPathWorldPos(0, pointerPath, true);
+            this.m_pointerDragging.moveTo();
+        }
     }
 
     protected refreshCowFarmFeedingGuide() {
+        if (!this.m_pointerDragging.node.active)
+            return;
+        const pointerPath: Vec3[] = [this.m_menu.fodder.node.worldPosition];
+        const animals = Manager.instance.getCowFarm().getAnimals();
+        let finished = true;
+        animals.forEach(animal => {
+            if (!animal.feed()) {
+                const screenPosition = Manager.instance.camera.worldToScreen(animal.feedingNode.worldPosition);
+                const worldPosition = this.camera.screenToWorld(screenPosition);
+                pointerPath.push(worldPosition);
+                finished = false;
+            }
+        });
+        this.m_pointerDragging.setPathWorldPos(pointerPath);
+        if (finished)
+            this.m_pointerDragging.node.active = false;
     }
 
     //==================================================
@@ -118,7 +155,6 @@ export class ManagerUI extends Component {
     }
 
     protected showCowFarmHarvestingGuide() {
-
     }
 
     protected refreshCowFarmHarvestingGuide() {

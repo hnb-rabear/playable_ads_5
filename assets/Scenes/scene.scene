@@ -7705,7 +7705,7 @@
     "m_animBigForm": {
       "__id__": 299
     },
-    "m_food": {
+    "m_fodder": {
       "__id__": 291
     },
     "m_products": [
@@ -8645,7 +8645,7 @@
     "m_animBigForm": {
       "__id__": 325
     },
-    "m_food": {
+    "m_fodder": {
       "__id__": 317
     },
     "m_products": [
@@ -9585,7 +9585,7 @@
     "m_animBigForm": {
       "__id__": 351
     },
-    "m_food": {
+    "m_fodder": {
       "__id__": 343
     },
     "m_products": [
