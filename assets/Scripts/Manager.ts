@@ -1,4 +1,4 @@
-import { _decorator, Camera, Component, Node, tween, Vec2, Vec3 } from 'cc';
+import { _decorator, Camera, Component, Node, tween, Vec2, Vec3, Widget } from 'cc';
 import { CustomerController } from './CustomerController';
 import { PathFollowing } from './Core/PathFollowing';
 import { IsometricZOrderUpdater } from './Core/IsometricZOrderUpdater';
@@ -32,6 +32,8 @@ export class Manager extends Component {
         this.m_stops.forEach(stop => {
             stop.active = false;
         });
+
+        this.getComponent(Widget).enabled = true;
     }
 
     protected start(): void {
@@ -74,16 +76,34 @@ export class Manager extends Component {
         const worldPos = this.camera.screenToWorld(screenPos);
 
         if (id === 'cow') {
+            const menuState = ManagerUI.instance.menu.state;
             const animals = this.m_cowFarm.getAnimals();
-            for (let i = 0; i < animals.length; i++) {
-                const animal = animals[i];
-                if (animal.hasAnimal())
-                    continue;
-
-                const pointerTarget = animal.pointerTarget;
-                const distance = Vec3.distance(pointerTarget.worldPosition, worldPos);
-                if (distance < 70) {
-                    animal.setState(AnimalState.Small);
+            for (const animal of animals) {
+                let targetPosition: Vec3;
+                switch (menuState) {
+                    case MenuState.Animal:
+                        targetPosition = animal.spotAnimal.worldPosition;
+                        break;
+                    case MenuState.Feed:
+                        targetPosition = animal.spotFodder.worldPosition;
+                        break;
+                    case MenuState.Harvest:
+                        targetPosition = animal.spotProducts.worldPosition;
+                        break;
+                }
+                const distance = Vec3.distance(targetPosition, worldPos);
+                if (distance < 100) {
+                    switch (menuState) {
+                        case MenuState.Animal:
+                            animal.addAnimal();
+                            break;
+                        case MenuState.Feed:
+                            animal.feed();
+                            break;
+                        case MenuState.Harvest:
+                            animal.collectProducts();
+                            break;
+                    }
                     ManagerUI.instance.hidePointer();
                 }
             }
@@ -92,7 +112,8 @@ export class Manager extends Component {
 
     public async onDragEndCattleMenuItem(id: string, uiWorldPos: Vec3) {
         if (id === 'cow') {
-            if (ManagerUI.instance.menu.state === MenuState.Animal) {
+            const menuState = ManagerUI.instance.menu.state;
+            if (menuState === MenuState.Animal) {
                 const hasEmptySlot = this.m_cowFarm.hasEmptyAnimalSlot();
                 if (hasEmptySlot) {
                     ManagerUI.instance.showCowFarmAddingGuide();
@@ -102,10 +123,20 @@ export class Manager extends Component {
                 // Show food menu of cow farm
                 ManagerUI.instance.showCowFarmFodderMenu();
             }
-            else if (ManagerUI.instance.menu.state === MenuState.Feed) {
-                const hasEmptySlot = this.m_cowFarm.has;
+            else if (menuState === MenuState.Feed) {
+                const hasEmptyFodderSlot = this.m_cowFarm.hasEmptyFodderSlot();
+                if (hasEmptyFodderSlot) {
+                    ManagerUI.instance.showCowFarmFeedingGuide();
+                }
+
+                // Show harvest menu of cow farm
+                ManagerUI.instance.showCowFarmHarvestMenu();
             }
-            else if (ManagerUI.instance.menu.state === MenuState.Harvest) {
+            else if (menuState === MenuState.Harvest) {
+                const hasAvailableProduct = this.m_cowFarm.hasProducts();
+                if (hasAvailableProduct) {
+                    ManagerUI.instance.showCowFarmHarvestingGuide();
+                }
             }
         }
     }

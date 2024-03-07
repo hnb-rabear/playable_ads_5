@@ -25,14 +25,14 @@ export class AnimalFarm extends Component {
 
     public hasEmptyFodderSlot() {
         for (let i = 0; i < this.m_animals.length; i++) {
-            if (!this.m_animals[i].feed())
+            if (!this.m_animals[i].isFeed())
                 return true;
         }
     }
 
-    public hasAvailableProduct() {
+    public hasProducts() {
         for (let i = 0; i < this.m_animals.length; i++) {
-            if (this.m_animals[i].hasProduct())
+            if (this.m_animals[i].hasProducts())
                 return true;
         }
     }

@@ -1,0 +1,412 @@
+
+Animal.png
+size: 1017,591
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+1
+  rotate: 180
+  xy: 415, 407
+  size: 173, 183
+  orig: 182, 189
+  offset: 9, 6
+  index: -1
+2
+  rotate: true
+  xy: 715, 458
+  size: 131, 125
+  orig: 133, 127
+  offset: 1, 1
+  index: -1
+FX_1/New folder_10
+  rotate: true
+  xy: 2, 164
+  size: 100, 107
+  orig: 128, 128
+  offset: 4, 17
+  index: -1
+FX_3/New folder_10
+  rotate: true
+  xy: 2, 164
+  size: 100, 107
+  orig: 128, 128
+  offset: 4, 17
+  index: -1
+FX_1/New folder_11
+  rotate: true
+  xy: 837, 144
+  size: 95, 105
+  orig: 128, 128
+  offset: 4, 19
+  index: -1
+FX_3/New folder_11
+  rotate: true
+  xy: 837, 144
+  size: 95, 105
+  orig: 128, 128
+  offset: 4, 19
+  index: -1
+FX_1/New folder_12
+  rotate: false
+  xy: 2, 71
+  size: 96, 91
+  orig: 128, 128
+  offset: 4, 28
+  index: -1
+FX_3/New folder_12
+  rotate: false
+  xy: 2, 71
+  size: 96, 91
+  orig: 128, 128
+  offset: 4, 28
+  index: -1
+FX_1/New folder_13
+  rotate: false
+  xy: 758, 60
+  size: 92, 82
+  orig: 128, 128
+  offset: 5, 32
+  index: -1
+FX_3/New folder_13
+  rotate: false
+  xy: 758, 60
+  size: 92, 82
+  orig: 128, 128
+  offset: 5, 32
+  index: -1
+FX_1/New folder_14
+  rotate: true
+  xy: 694, 43
+  size: 92, 60
+  orig: 128, 128
+  offset: 7, 50
+  index: -1
+FX_3/New folder_14
+  rotate: true
+  xy: 694, 43
+  size: 92, 60
+  orig: 128, 128
+  offset: 7, 50
+  index: -1
+FX_1/New folder_15
+  rotate: false
+  xy: 407, 535
+  size: 10, 25
+  orig: 128, 128
+  offset: 90, 77
+  index: -1
+FX_3/New folder_15
+  rotate: false
+  xy: 407, 535
+  size: 10, 25
+  orig: 128, 128
+  offset: 90, 77
+  index: -1
+FX_1/New folder_16
+  rotate: false
+  xy: 230, 513
+  size: 8, 15
+  orig: 128, 128
+  offset: 92, 82
+  index: -1
+FX_3/New folder_16
+  rotate: false
+  xy: 230, 513
+  size: 8, 15
+  orig: 128, 128
+  offset: 92, 82
+  index: -1
+FX_1/New folder_7
+  rotate: true
+  xy: 426, 70
+  size: 94, 96
+  orig: 128, 128
+  offset: 8, 19
+  index: -1
+FX_3/New folder_7
+  rotate: true
+  xy: 426, 70
+  size: 94, 96
+  orig: 128, 128
+  offset: 8, 19
+  index: -1
+FX_1/New folder_8
+  rotate: true
+  xy: 555, 140
+  size: 97, 101
+  orig: 128, 128
+  offset: 7, 18
+  index: -1
+FX_3/New folder_8
+  rotate: true
+  xy: 555, 140
+  size: 97, 101
+  orig: 128, 128
+  offset: 7, 18
+  index: -1
+FX_1/New folder_9
+  rotate: false
+  xy: 735, 236
+  size: 100, 109
+  orig: 128, 128
+  offset: 5, 17
+  index: -1
+FX_3/New folder_9
+  rotate: false
+  xy: 735, 236
+  size: 100, 109
+  orig: 128, 128
+  offset: 5, 17
+  index: -1
+FX_2/New folder_1
+  rotate: false
+  xy: 311, 28
+  size: 75, 74
+  orig: 128, 128
+  offset: 20, 24
+  index: -1
+FX_2/New folder_10
+  rotate: true
+  xy: 626, 239
+  size: 106, 107
+  orig: 128, 128
+  offset: 8, 5
+  index: -1
+FX_2/New folder_11
+  rotate: false
+  xy: 230, 270
+  size: 108, 107
+  orig: 128, 128
+  offset: 7, 5
+  index: -1
+FX_2/New folder_12
+  rotate: false
+  xy: 2, 266
+  size: 108, 107
+  orig: 128, 128
+  offset: 7, 5
+  index: -1
+FX_2/New folder_13
+  rotate: false
+  xy: 112, 266
+  size: 108, 107
+  orig: 128, 128
+  offset: 7, 5
+  index: -1
+FX_2/New folder_14
+  rotate: false
+  xy: 837, 241
+  size: 108, 107
+  orig: 128, 128
+  offset: 7, 6
+  index: -1
+FX_2/New folder_15
+  rotate: false
+  xy: 515, 273
+  size: 109, 108
+  orig: 128, 128
+  offset: 7, 5
+  index: -1
+FX_2/New folder_16
+  rotate: true
+  xy: 944, 148
+  size: 91, 70
+  orig: 128, 128
+  offset: 25, 28
+  index: -1
+FX_2/New folder_2
+  rotate: false
+  xy: 524, 57
+  size: 83, 81
+  orig: 128, 128
+  offset: 17, 20
+  index: -1
+FX_2/New folder_3
+  rotate: true
+  xy: 214, 70
+  size: 93, 95
+  orig: 128, 128
+  offset: 13, 12
+  index: -1
+FX_2/New folder_4
+  rotate: true
+  xy: 328, 104
+  size: 95, 96
+  orig: 128, 128
+  offset: 12, 12
+  index: -1
+FX_2/New folder_5
+  rotate: false
+  xy: 658, 137
+  size: 98, 97
+  orig: 128, 128
+  offset: 11, 11
+  index: -1
+FX_2/New folder_6
+  rotate: false
+  xy: 111, 164
+  size: 101, 100
+  orig: 128, 128
+  offset: 10, 9
+  index: -1
+FX_2/New folder_7
+  rotate: false
+  xy: 222, 165
+  size: 104, 103
+  orig: 128, 128
+  offset: 9, 7
+  index: -1
+FX_2/New folder_8
+  rotate: false
+  xy: 448, 166
+  size: 105, 105
+  orig: 128, 128
+  offset: 9, 6
+  index: -1
+FX_2/New folder_9
+  rotate: false
+  xy: 340, 201
+  size: 106, 105
+  orig: 128, 128
+  offset: 8, 6
+  index: -1
+FX_3/New folder_1
+  rotate: false
+  xy: 523, 7
+  size: 50, 48
+  orig: 128, 128
+  offset: 33, 45
+  index: -1
+FX_3/New folder_2
+  rotate: false
+  xy: 388, 11
+  size: 58, 57
+  orig: 128, 128
+  offset: 27, 39
+  index: -1
+FX_3/New folder_3
+  rotate: true
+  xy: 190, 2
+  size: 66, 74
+  orig: 128, 128
+  offset: 23, 27
+  index: -1
+FX_3/New folder_4
+  rotate: true
+  xy: 609, 58
+  size: 77, 83
+  orig: 128, 128
+  offset: 19, 23
+  index: -1
+FX_3/New folder_5
+  rotate: true
+  xy: 852, 60
+  size: 82, 86
+  orig: 128, 128
+  offset: 15, 22
+  index: -1
+FX_3/New folder_6
+  rotate: true
+  xy: 100, 73
+  size: 89, 93
+  orig: 128, 128
+  offset: 11, 19
+  index: -1
+Grass
+  rotate: false
+  xy: 100, 13
+  size: 88, 58
+  orig: 90, 60
+  offset: 1, 1
+  index: -1
+Group 97
+  rotate: false
+  xy: 390, 308
+  size: 123, 97
+  orig: 125, 99
+  offset: 1, 0
+  index: -1
+Head
+  rotate: false
+  xy: 715, 347
+  size: 120, 109
+  orig: 122, 111
+  offset: 1, 1
+  index: -1
+Layer 109
+  rotate: false
+  xy: 842, 439
+  size: 122, 150
+  orig: 122, 150
+  offset: 0, 0
+  index: -1
+Layer 124
+  rotate: false
+  xy: 377, 562
+  size: 45, 27
+  orig: 47, 29
+  offset: 1, 1
+  index: -1
+Layer 125 copy 2
+  rotate: false
+  xy: 837, 350
+  size: 138, 87
+  orig: 138, 87
+  offset: 0, 0
+  index: -1
+Layer 126
+  rotate: false
+  xy: 340, 353
+  size: 28, 28
+  orig: 31, 30
+  offset: 1, 1
+  index: -1
+Layer 134
+  rotate: false
+  xy: 2, 375
+  size: 226, 214
+  orig: 236, 223
+  offset: 9, 8
+  index: -1
+Layer 137
+  rotate: true
+  xy: 944, 57
+  size: 89, 68
+  orig: 92, 70
+  offset: 1, 1
+  index: -1
+Layer 142
+  rotate: false
+  xy: 448, 11
+  size: 73, 57
+  orig: 73, 57
+  offset: 0, 0
+  index: -1
+Layer 143
+  rotate: false
+  xy: 2, 11
+  size: 88, 58
+  orig: 90, 60
+  offset: 1, 1
+  index: -1
+Layer 195
+  rotate: false
+  xy: 230, 568
+  size: 22, 21
+  orig: 23, 21
+  offset: 0, 0
+  index: -1
+ic_animal_food_02
+  rotate: true
+  xy: 586, 383
+  size: 160, 127
+  orig: 161, 127
+  offset: 0, 0
+  index: -1
+ic_heo_outline1
+  rotate: true
+  xy: 230, 379
+  size: 210, 193
+  orig: 210, 193
+  offset: 0, 0
+  index: -1

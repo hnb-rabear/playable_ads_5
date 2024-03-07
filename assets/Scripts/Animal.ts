@@ -10,13 +10,15 @@ export enum AnimalState {
 @ccclass('Animal')
 export class Animal extends Component {
     @property(CCInteger) protected m_id: number = 0;
-    @property(sp.Skeleton) protected m_animSmallForm: sp.Skeleton = null;
-    @property(sp.Skeleton) protected m_animBigForm: sp.Skeleton = null;
+    @property(sp.Skeleton) protected m_anim: sp.Skeleton = null;
     @property(Node) protected m_fodder: Node = null;
     @property([Node]) protected m_products: Node[] = [];
-    @property(Node) public pointerTarget: Node;
+    @property(Node) public spotAnimal: Node;
+    @property(Node) public spotProducts: Node;
 
-    public get feedingNode() {
+    protected m_state: AnimalState;
+
+    public get spotFodder() {
         return this.m_fodder;
     }
 
@@ -29,41 +31,71 @@ export class Animal extends Component {
             product.active = false;
         });
         this.m_fodder.active = false;
+        this.m_anim.node.active = false;
     }
 
+    // public setState(state: AnimalState) {
+    //     this.m_animSmallForm.node.active = state === AnimalState.Small;
+    //     this.m_animBigForm.node.active = state === AnimalState.Big;
+
+    //     if (state === AnimalState.Small) {
+    //         this.m_animSmallForm.setAnimation(0, 'dung', true);
+    //     } else if (state === AnimalState.Big) {
+    //         if (this.m_animSmallForm.node.active) {
+    //             tween(this.m_animSmallForm)
+    //                 .to(0.5, { color: Color.TRANSPARENT }).start();
+    //             this.m_animBigForm.color.set(Color.TRANSPARENT);
+    //             tween(this.m_animBigForm)
+    //                 .to(0.5, { color: Color.WHITE }).start();
+    //         } else {
+    //             this.m_animSmallForm.node.active = false;
+    //             this.m_animBigForm.node.active = true;
+    //             this.m_animBigForm.setAnimation(0, 'an', true);
+    //         }
+    //     }
+    // }
+
     public setState(state: AnimalState) {
-        switch (state) {
-            case AnimalState.Small:
-                this.m_animSmallForm.node.active = true;
-                this.m_animBigForm.node.active = false;
-                this.m_animSmallForm.setAnimation(0, 'dung', true);
-                break;
-            case AnimalState.Big:
-                if (this.m_animSmallForm.node.active) {
-                    tween(this.m_animSmallForm)
-                        .to(0.5, { color: Color.TRANSPARENT }).start();
-                    this.m_animBigForm.color.set(Color.TRANSPARENT);
-                    tween(this.m_animBigForm)
-                        .to(0.5, { color: Color.WHITE }).start();
-                } else {
-                    this.m_animSmallForm.node.active = false;
-                    this.m_animBigForm.node.active = true;
-                    this.m_animSmallForm.setAnimation(0, 'an', true);
-                }
-                break;
-            default:
-                this.m_animSmallForm.node.active = false;
-                this.m_animBigForm.node.active = false;
-                break;
-        }
+        this.m_state = state;
+    }
+
+    public addAnimal() {
+        if (this.m_anim.node.active)
+            return;
+        this.m_anim.node.active = true;
+        this.m_anim.setAnimation(0, 'tha_bo_con', false);
+        setTimeout(() => {
+            this.m_anim.setAnimation(0, 'dung_bo_con', true);
+        }, 1000);
+        // this.m_anim.setEndListener(() => {
+        //     this.m_anim.setAnimation(0, 'dung_bo_con', true);
+        // });
     }
 
     public hasAnimal() {
-        return this.m_animSmallForm.node.active || this.m_animBigForm.node.active;
+        return this.m_anim.node.active;
+    }
+
+    public isFeed() {
+        return this.m_fodder.active;
+    }
+
+    public hasProducts() {
+        return this.m_products.every(product => product.active);
     }
 
     public feed() {
-        return this.m_fodder.active;
+        // if (this.m_fodder.active)
+        //     return;
+        this.m_fodder.active = true;
+        this.m_anim.setAnimation(0, 'tha_co', true);
+        this.m_anim.setEndListener(() => {
+
+        });
+    }
+
+    public collectProducts() {
+
     }
 }
 
