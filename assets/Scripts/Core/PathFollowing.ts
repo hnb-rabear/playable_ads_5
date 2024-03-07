@@ -6,7 +6,8 @@ export class PathFollowing extends Component {
 
     @property(CCBoolean) protected m_autoMove: boolean = false;
     @property(CCInteger) protected m_moveSpeed: number = 0;
-    @property([Node]) protected m_path: Node[] = [];
+    @property([Node]) protected m_pathNode: Node[] = [];
+    @property([Vec3]) protected m_pathWorldPos: Vec3[] = [];
 
     @property({ readonly: true }) protected m_reached: boolean = false;
     public get reached(): boolean {
@@ -34,7 +35,7 @@ export class PathFollowing extends Component {
 
     protected start(): void {
         if (!this.m_init)
-            this.init(0, this.m_path, this.m_autoMove);
+            this.initPathNode(0, this.m_pathNode, this.m_autoMove);
     }
 
     protected update(deltaTime: number): void {
@@ -42,14 +43,19 @@ export class PathFollowing extends Component {
             return;
         const reached = this.move(deltaTime);
         if (reached && !this.m_reached) {
-            this.m_reached = true;
-            reached && this.onReached && this.onReached();
+            this.reachDestination();
         }
     }
 
-    public init(idx: number, path: Node[], autoMove: boolean): void {
+    protected reachDestination(): void {
+        this.m_reached = true;
+        this.onReached && this.onReached();
+    }
+
+    public initPathNode(idx: number, path: Node[], autoMove: boolean): void {
         this.m_index = idx;
-        this.m_path = path;
+        this.m_pathNode = path;
+        this.m_pathWorldPos = [];
         this.m_autoMove = autoMove;
         this.m_init = true;
         this.m_reached = false;
@@ -57,18 +63,50 @@ export class PathFollowing extends Component {
         this.m_movingDuration = 0;
         this.m_destinationIndex = 0;
         this.m_maxDuration = 0;
-        if (this.m_path.length > 0)
-            this.node.setWorldPosition(this.m_path[this.m_targetStopIndex].worldPosition);
+        if (this.m_pathNode.length > 0)
+            this.node.setWorldPosition(this.m_pathNode[this.m_targetStopIndex].worldPosition);
+    }
+
+    public initPathWorldPos(idx: number, path: Vec3[], autoMove: boolean): void {
+        this.m_index = idx;
+        this.m_pathNode = [];
+        this.m_pathWorldPos = path;
+        this.m_autoMove = autoMove;
+        this.m_init = true;
+        this.m_reached = false;
+        this.m_targetStopIndex = 0;
+        this.m_movingDuration = 0;
+        this.m_destinationIndex = 0;
+        this.m_maxDuration = 0;
+        if (this.m_pathWorldPos.length > 0)
+            this.node.setWorldPosition(this.m_pathWorldPos[this.m_targetStopIndex]);
+    }
+
+    public restart() {
+        if (this.m_pathNode.length > 0)
+            this.initPathNode(this.m_index, this.m_pathNode, this.m_autoMove);
+        if (this.m_pathWorldPos.length > 0)
+            this.initPathWorldPos(this.m_index, this.m_pathWorldPos, this.m_autoMove);
+    }
+
+    public get totalStops(): number {
+        return this.m_pathNode.length > 0 ? this.m_pathNode.length - 1 : this.m_pathWorldPos.length;
     }
 
     public moveTo(destinationIdx: number = 0) {
-        destinationIdx = math.clamp(destinationIdx, 0, this.m_path.length - 1);
+        const totalStops = this.totalStops;
+        if (destinationIdx > 0) {
+            destinationIdx = Math.min(destinationIdx, totalStops - 1);
+        }
+        else {
+            destinationIdx = totalStops - 1;
+        }
         if (this.m_destinationIndex >= destinationIdx)
             return;
 
         this.m_reached = false;
         this.m_movingDuration = 0;
-        this.m_destinationIndex = math.clamp(destinationIdx, 0, this.m_path.length - 1);
+        this.m_destinationIndex = destinationIdx;
         this.m_maxDuration = this.getLinerDurationFromTo(this.m_targetStopIndex, this.m_destinationIndex);
     }
 
@@ -81,14 +119,10 @@ export class PathFollowing extends Component {
     }
 
     protected move(deltaTime: number): boolean {
-        if (this.m_path.length === 0 || this.m_moveSpeed <= 0)
+        if ((this.m_pathNode.length === 0 && this.m_pathWorldPos.length === 0) || this.m_moveSpeed <= 0)
             return false;
 
-        const destinationIdx = this.m_destinationIndex > 0
-            ? math.clamp(this.m_destinationIndex, 0, this.m_path.length - 1)
-            : this.m_path.length - 1;
-
-        if (this.m_targetStopIndex > destinationIdx) {
+        if (this.m_targetStopIndex > this.m_destinationIndex) {
             return true;
         }
 
@@ -99,15 +133,23 @@ export class PathFollowing extends Component {
 
         this.m_movingDuration += deltaTime;
         const index = this.m_targetStopIndex;
-        let currentTarget = this.m_path[index];
-        let direction = Vec3.subtract(new Vec3(), currentTarget.worldPosition, this.node.worldPosition).normalize();
+
+        let currentTargetPos: Vec3;
+        if (this.m_pathWorldPos.length > 0) {
+            currentTargetPos = this.m_pathWorldPos[index];
+        }
+        else if (this.m_pathNode.length > 0) {
+            currentTargetPos = this.m_pathNode[index].worldPosition;
+        }
+
+        let direction = Vec3.subtract(new Vec3(), currentTargetPos, this.node.worldPosition).normalize();
         let displacement = Vec3.multiplyScalar(new Vec3(), direction, this.m_moveSpeed * deltaTime);
         this.node.worldPosition = this.node.worldPosition.add(displacement);
         this.setDirection(direction);
-        if (Vec3.subtract(new Vec3(), currentTarget.worldPosition, this.node.worldPosition).length() < this.m_moveSpeed * deltaTime) {
-            this.node.setWorldPosition(currentTarget.worldPosition);
+        if (Vec3.subtract(new Vec3(), currentTargetPos, this.node.worldPosition).length() < this.m_moveSpeed * deltaTime) {
+            this.node.setWorldPosition(currentTargetPos);
             this.m_targetStopIndex = index + 1;
-            if (this.m_targetStopIndex > destinationIdx) {
+            if (this.m_targetStopIndex > this.m_destinationIndex) {
                 // reach the end of the path
                 return true;
             }
@@ -133,30 +175,41 @@ export class PathFollowing extends Component {
     }
 
     public getDistanceFromStart() {
-        return this.getDistanceFromTo(0, this.m_path.length - 1);
+        return this.getDistanceFromTo(0, this.totalStops - 1);
     }
 
     public getLinerDurationFromStart() {
-        if (this.m_path.length === 0)
-            return 0;
         return this.getDistanceFromStart() / this.m_moveSpeed;
     }
 
     public getDistanceFromTo(fromIdx: number, toIdx: number) {
-        if (this.m_path.length === 0 || fromIdx === toIdx)
+        if (fromIdx === toIdx)
             return 0;
+
         let distance = 0;
         if (fromIdx > toIdx)
             [fromIdx, toIdx] = [toIdx, fromIdx];
-        for (let i = 0; i < this.m_path.length - 1; i++)
-            if (i >= fromIdx && i <= toIdx)
-                distance += Vec3.distance(this.m_path[i].worldPosition, this.m_path[i + 1].worldPosition);
+
+        if (this.m_pathNode.length > 0) {
+            for (let i = 0; i < this.m_pathNode.length - 1; i++)
+                if (i >= fromIdx && i <= toIdx)
+                    distance += Vec3.distance(this.m_pathNode[i].worldPosition, this.m_pathNode[i + 1].worldPosition);
+        }
+
+        if (this.m_pathWorldPos.length > 0) {
+            for (let i = 0; i < this.m_pathWorldPos.length - 1; i++)
+                if (i >= fromIdx && i <= toIdx)
+                    distance += Vec3.distance(this.m_pathWorldPos[i], this.m_pathWorldPos[i + 1]);
+        }
+
         return distance;
     }
 
     public getLinerDurationFromTo(fromIdx: number, toIdx: number) {
-        if (this.m_path.length === 0)
-            return 0;
         return this.getDistanceFromTo(fromIdx, toIdx) / this.m_moveSpeed;
+    }
+
+    public setAutoMove(autoMove: boolean) {
+        this.m_autoMove = autoMove;
     }
 }

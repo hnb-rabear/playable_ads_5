@@ -1,8 +1,9 @@
-import { _decorator, Component, Node, tween, Vec2, Vec3 } from 'cc';
+import { _decorator, Camera, Component, Node, tween, Vec2, Vec3 } from 'cc';
 import { CustomerController } from './CustomerController';
 import { PathFollowing } from './Core/PathFollowing';
 import { IsometricZOrderUpdater } from './Core/IsometricZOrderUpdater';
 import { ManagerUI } from './ManagerUI';
+import { AnimalFarm } from './AnimalFarm';
 const { ccclass, property } = _decorator;
 
 @ccclass('Manager')
@@ -13,10 +14,12 @@ export class Manager extends Component {
         return Manager.m_instance;
     }
 
+    @property(Camera) public camera: Camera;
     @property([Node]) protected m_customerNodes: Node[] = []; // This is CustomerController
     @property([Node]) protected m_stops: Node[] = [];
     @property(Node) protected m_firstStop: Node;
     @property(Node) protected m_secondStop: Node;
+    @property(AnimalFarm) protected m_cowFarm: AnimalFarm;
     @property(IsometricZOrderUpdater) protected m_isometricZOrderUpdater: IsometricZOrderUpdater;
 
     private m_customers: CustomerController[] = [];
@@ -32,11 +35,11 @@ export class Manager extends Component {
     protected start(): void {
         for (let i = 0; i < this.m_customerNodes.length; i++) {
             const ctrl = this.m_customerNodes[i].getComponent(CustomerController);
-            ctrl.init(i, this.m_stops, false);
+            ctrl.initPathNode(i, this.m_stops, false);
             this.m_customers.push(ctrl);
         }
 
-        this.moveToFirstStop();
+        this.showFarmCowMenu();
     }
 
     protected update(deltaTime: number): void {
@@ -44,8 +47,10 @@ export class Manager extends Component {
             this.m_customers[i].moveControl(deltaTime);
     }
 
-    protected moveToFirstStop() {
+    protected async showFarmCowMenu() {
+        //Move car to destination 1
         const destinationIdx = this.m_stops.indexOf(this.m_firstStop);
+        let reached = false;
         for (let i = 0; i < this.m_customers.length; i++) {
             const index = i;
             const customer = this.m_customers[i];
@@ -53,14 +58,14 @@ export class Manager extends Component {
             customer.setDelay(0.5 * i);
             customer.onReached = () => {
                 if (i === this.m_customers.length - 1) {
-                    setTimeout(() => {
-                        ManagerUI.instance.showFarmCowMenu();
-                    }, 500);
+                    reached = true;
+                    ManagerUI.instance.showFarmCowMenu();
                 }
             };
-            this.m_isometricZOrderUpdater.updateSortingOrder();
         }
+        this.m_isometricZOrderUpdater.updateSortingOrder();
     }
+
 
     protected moveToSecondStop() {
         const destinationIdx = this.m_stops.indexOf(this.m_secondStop);
@@ -72,7 +77,7 @@ export class Manager extends Component {
         }
     }
 
-    protected endGame() {
-
+    public getCowFarm() {
+        return this.m_cowFarm;
     }
 }

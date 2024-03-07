@@ -14,7 +14,12 @@ export class PointerDragging extends PathFollowing {
         this.m_renderPointer.spriteFrame = spt;
     }
 
-
+    protected reachDestination(): void {
+        super.reachDestination();
+        // loop
+        this.restart();
+        this.moveTo();
+    }
 }
 
 
