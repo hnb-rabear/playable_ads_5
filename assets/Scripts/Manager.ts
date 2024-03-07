@@ -34,7 +34,6 @@ export class Manager extends Component {
             const ctrl = this.m_customerNodes[i].getComponent(CustomerController);
             ctrl.init(i, this.m_stops, false);
             this.m_customers.push(ctrl);
-            // IsometricZOrderUpdater.instance.addChild(ctrl.node);
         }
 
         this.moveToFirstStop();
@@ -49,7 +48,7 @@ export class Manager extends Component {
         const destinationIdx = this.m_stops.indexOf(this.m_firstStop);
         for (let i = 0; i < this.m_customers.length; i++) {
             const customer = this.m_customers[i];
-            customer.setDestinationIndex(destinationIdx - i);
+            customer.moveTo(destinationIdx - i);
             customer.setDelay(0.5 * i);
             this.m_isometricZOrderUpdater.updateSortingOrder();
         }
@@ -59,7 +58,7 @@ export class Manager extends Component {
         const destinationIdx = this.m_stops.indexOf(this.m_secondStop);
         for (let i = 0; i < this.m_customers.length; i++) {
             const customer = this.m_customers[i];
-            customer.setDestinationIndex(destinationIdx - i);
+            customer.moveTo(destinationIdx - i);
             customer.setDelay(0.5 * i);
             this.m_isometricZOrderUpdater.updateSortingOrder();
         }

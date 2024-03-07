@@ -34,7 +34,7 @@
       }
     ],
     "_prefab": {
-      "__id__": 62
+      "__id__": 64
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -1338,6 +1338,16 @@
     "m_autoMove": false,
     "m_moveSpeed": 1200,
     "m_path": [],
+    "m_speedCurve": {
+      "__id__": 62
+    },
+    "m_init": false,
+    "m_curStopIndex": 0,
+    "m_destinationIndex": 0,
+    "m_delay": 0,
+    "m_curDuration": 0,
+    "m_fullDuration": 0,
+    "m_curSpeed": 0,
     "m_index": 0,
     "m_bodyFront": {
       "__id__": 30
@@ -1350,6 +1360,49 @@
   {
     "__type__": "cc.CompPrefabInfo",
     "fileId": "c0o0jOLKZA/roayhPHa32K"
+  },
+  {
+    "__type__": "cc.CurveRange",
+    "mode": 1,
+    "spline": {
+      "__id__": 63
+    },
+    "multiplier": 1
+  },
+  {
+    "__type__": "cc.RealCurve",
+    "_times": [
+      0,
+      1
+    ],
+    "_values": [
+      {
+        "__type__": "cc.RealKeyframeValue",
+        "interpolationMode": 2,
+        "tangentWeightMode": 0,
+        "value": 1,
+        "rightTangent": -2,
+        "rightTangentWeight": 1,
+        "leftTangent": -2,
+        "leftTangentWeight": 1,
+        "easingMethod": 0,
+        "__editorExtras__": null
+      },
+      {
+        "__type__": "cc.RealKeyframeValue",
+        "interpolationMode": 2,
+        "tangentWeightMode": 0,
+        "value": 0,
+        "rightTangent": 0,
+        "rightTangentWeight": 1,
+        "leftTangent": 0,
+        "leftTangentWeight": 1,
+        "easingMethod": 0,
+        "__editorExtras__": null
+      }
+    ],
+    "preExtrapolation": 1,
+    "postExtrapolation": 1
   },
   {
     "__type__": "cc.PrefabInfo",

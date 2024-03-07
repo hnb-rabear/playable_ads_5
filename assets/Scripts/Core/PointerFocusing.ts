@@ -1,8 +1,8 @@
 import { _decorator, Component, Node, Vec3, Animation, tween } from 'cc';
 const { ccclass, property } = _decorator;
 
-@ccclass('TutorialPointer')
-export class TutorialPointer extends Component {
+@ccclass('PointerFocusing')
+export class PointerFocusing extends Component {
     @property(Animation) private m_pointerAnim: Animation;
 
     private m_target: Node;

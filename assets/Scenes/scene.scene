@@ -10169,7 +10169,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "Animals_H",
+    "_name": "Animals_V",
     "_objFlags": 0,
     "_parent": {
       "__id__": 400
@@ -10711,7 +10711,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "Animals_V",
+    "_name": "Animals_H",
     "_objFlags": 0,
     "_parent": {
       "__id__": 400
@@ -11325,6 +11325,12 @@
     },
     "_enabled": true,
     "__prefab": null,
+    "m_horizontalScreenMenu": {
+      "__id__": 424
+    },
+    "m_verticalScreenMenu": {
+      "__id__": 407
+    },
     "_id": "eeRIF2FulJWaSme1NU4+Rc"
   },
   {
