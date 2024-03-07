@@ -8,23 +8,23 @@ export class PathFollowing extends Component {
     @property(CCInteger) protected m_moveSpeed: number = 0;
     @property([Node]) protected m_path: Node[] = [];
 
-    protected m_reached: boolean = false;
+    @property({ readonly: true }) protected m_reached: boolean = false;
     public get reached(): boolean {
         return this.m_reached;
     }
 
-    protected m_direction: Vec3;
+    @property({ readonly: true }) protected m_direction: Vec3;
     public get direction(): Vec3 {
         return this.m_direction;
     }
 
-    protected m_index: number = 0;
+    @property({ readonly: true }) protected m_index: number = 0;
     public get index(): number {
         return this.m_index;
     }
 
     @property({ readonly: true }) protected m_init: boolean = false;
-    @property({ readonly: true }) protected m_curStopIndex: number = 0;
+    @property({ readonly: true }) protected m_targetStopIndex: number = 0;
     @property({ readonly: true }) protected m_destinationIndex: number = 0;
     @property({ readonly: true }) protected m_delay: number = 0;
     @property({ readonly: true }) protected m_movingDuration: number = 0;
@@ -43,7 +43,7 @@ export class PathFollowing extends Component {
         const reached = this.move(deltaTime);
         if (reached && !this.m_reached) {
             this.m_reached = true;
-            this.onReached?.();
+            reached && this.onReached && this.onReached();
         }
     }
 
@@ -53,12 +53,12 @@ export class PathFollowing extends Component {
         this.m_autoMove = autoMove;
         this.m_init = true;
         this.m_reached = false;
-        this.m_curStopIndex = 0;
+        this.m_targetStopIndex = 0;
         this.m_movingDuration = 0;
         this.m_destinationIndex = 0;
         this.m_maxDuration = 0;
         if (this.m_path.length > 0)
-            this.node.setWorldPosition(this.m_path[this.m_curStopIndex].worldPosition);
+            this.node.setWorldPosition(this.m_path[this.m_targetStopIndex].worldPosition);
     }
 
     public moveTo(destinationIdx: number = 0) {
@@ -69,7 +69,7 @@ export class PathFollowing extends Component {
         this.m_reached = false;
         this.m_movingDuration = 0;
         this.m_destinationIndex = math.clamp(destinationIdx, 0, this.m_path.length - 1);
-        this.m_maxDuration = this.getLinerDurationFromTo(this.m_curStopIndex, this.m_destinationIndex);
+        this.m_maxDuration = this.getLinerDurationFromTo(this.m_targetStopIndex, this.m_destinationIndex);
     }
 
     public setDelay(delay: number): void {
@@ -88,8 +88,9 @@ export class PathFollowing extends Component {
             ? math.clamp(this.m_destinationIndex, 0, this.m_path.length - 1)
             : this.m_path.length - 1;
 
-        if (this.m_curStopIndex > destinationIdx)
+        if (this.m_targetStopIndex > destinationIdx) {
             return true;
+        }
 
         if (this.m_delay > 0) {
             this.m_delay -= deltaTime;
@@ -97,7 +98,7 @@ export class PathFollowing extends Component {
         }
 
         this.m_movingDuration += deltaTime;
-        const index = this.m_curStopIndex;
+        const index = this.m_targetStopIndex;
         let currentTarget = this.m_path[index];
         let direction = Vec3.subtract(new Vec3(), currentTarget.worldPosition, this.node.worldPosition).normalize();
         let displacement = Vec3.multiplyScalar(new Vec3(), direction, this.m_moveSpeed * deltaTime);
@@ -105,8 +106,8 @@ export class PathFollowing extends Component {
         this.setDirection(direction);
         if (Vec3.subtract(new Vec3(), currentTarget.worldPosition, this.node.worldPosition).length() < this.m_moveSpeed * deltaTime) {
             this.node.setWorldPosition(currentTarget.worldPosition);
-            this.m_curStopIndex = index + 1;
-            if (this.m_curStopIndex > destinationIdx) {
+            this.m_targetStopIndex = index + 1;
+            if (this.m_targetStopIndex > destinationIdx) {
                 // reach the end of the path
                 return true;
             }
@@ -117,7 +118,12 @@ export class PathFollowing extends Component {
     public moveControl(deltaTime: number) {
         if (this.m_autoMove)
             return;
-        return this.move(deltaTime);
+        const reached = this.move(deltaTime);
+        if (reached && !this.m_reached) {
+            this.m_reached = true;
+            reached && this.onReached && this.onReached();
+        }
+        return reached;
     }
 
     protected setDirection(direction: Vec3) {

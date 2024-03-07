@@ -1,4 +1,5 @@
 import { _decorator, Component, Node } from 'cc';
+import { CattleMenu } from './CattleMenu';
 const { ccclass, property } = _decorator;
 
 @ccclass('ManagerUI')
@@ -8,25 +9,34 @@ export class ManagerUI extends Component {
         return ManagerUI.m_instance;
     }
 
-    @property(Node) protected m_horizontalScreenMenu: Node;
-    @property(Node) protected m_verticalScreenMenu: Node;
+    @property(CattleMenu) protected m_menu: CattleMenu;
+
+    protected m_horizontalScreen: boolean;
 
     protected onLoad(): void {
         ManagerUI.m_instance = this;
     }
 
     protected start(): void {
-        window.addEventListener('resize', () => {
-            // The window width has changed
-            this.checkScreenRatio();
-        });
-        this.checkScreenRatio();
+        this.m_menu.node.active = false;
     }
 
-    protected checkScreenRatio(): void {
-        const isHorizontal = window.innerWidth >= window.innerHeight;
-        this.m_horizontalScreenMenu.active = isHorizontal;
-        this.m_verticalScreenMenu.active = !isHorizontal;
+    public showFarmCowMenu() {
+        this.m_menu.node.active = true;
+        this.m_menu.showFarmCowMenu();
+    }
+
+    public hideFarmMenu() {
+        this.m_menu.node.active = false;
+    }
+
+    public showFarmChickenMenu() {
+        this.m_menu.node.active = true;
+        this.m_menu.showFarmChickenMenu();
+    }
+
+    protected isHorizontalScreen() {
+        return window.innerWidth >= window.innerHeight;
     }
 }
 

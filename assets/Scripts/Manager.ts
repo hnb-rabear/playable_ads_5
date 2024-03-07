@@ -1,7 +1,8 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node, tween, Vec2, Vec3 } from 'cc';
 import { CustomerController } from './CustomerController';
 import { PathFollowing } from './Core/PathFollowing';
 import { IsometricZOrderUpdater } from './Core/IsometricZOrderUpdater';
+import { ManagerUI } from './ManagerUI';
 const { ccclass, property } = _decorator;
 
 @ccclass('Manager')
@@ -19,7 +20,6 @@ export class Manager extends Component {
     @property(IsometricZOrderUpdater) protected m_isometricZOrderUpdater: IsometricZOrderUpdater;
 
     private m_customers: CustomerController[] = [];
-    private m_destination: number = 0;
 
     protected onLoad(): void {
         Manager.m_instance = this;
@@ -47,9 +47,17 @@ export class Manager extends Component {
     protected moveToFirstStop() {
         const destinationIdx = this.m_stops.indexOf(this.m_firstStop);
         for (let i = 0; i < this.m_customers.length; i++) {
+            const index = i;
             const customer = this.m_customers[i];
             customer.moveTo(destinationIdx - i);
             customer.setDelay(0.5 * i);
+            customer.onReached = () => {
+                if (i === this.m_customers.length - 1) {
+                    setTimeout(() => {
+                        ManagerUI.instance.showFarmCowMenu();
+                    }, 500);
+                }
+            };
             this.m_isometricZOrderUpdater.updateSortingOrder();
         }
     }
