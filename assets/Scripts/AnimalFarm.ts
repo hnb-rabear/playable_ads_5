@@ -30,14 +30,14 @@ export class AnimalFarm extends Component {
         }
     }
 
-    public hasProducts() {
+    public hasCollectableProducts() {
         for (let i = 0; i < this.m_animals.length; i++) {
-            if (this.m_animals[i].hasProducts())
+            if (this.m_animals[i].hasCollectableProducts())
                 return true;
         }
     }
 
-    public createAnimalProducts() {
+    public createProducts() {
         this.m_animals.forEach(animal => {
             animal.createProducts();
         });

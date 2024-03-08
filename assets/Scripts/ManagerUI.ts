@@ -159,7 +159,7 @@ export class ManagerUI extends Component {
         const animals = Manager.instance.getCowFarm().getAnimals();
         let finished = true;
         animals.forEach(animal => {
-            if (animal.hasProducts()) {
+            if (animal.hasCollectableProducts()) {
                 const screenPos = Manager.instance.camera.worldToScreen(animal.spotProducts.worldPosition);
                 const worldPos = this.camera.screenToWorld(screenPos);
                 pointerPath.push(worldPos);
@@ -181,7 +181,7 @@ export class ManagerUI extends Component {
         const animals = Manager.instance.getCowFarm().getAnimals();
         let finished = true;
         animals.forEach(animal => {
-            if (animal.hasProducts()) {
+            if (animal.hasCollectableProducts()) {
                 const screenPosition = Manager.instance.camera.worldToScreen(animal.spotProducts.worldPosition);
                 const worldPosition = this.camera.screenToWorld(screenPosition);
                 pointerPath.push(worldPosition);
@@ -197,6 +197,10 @@ export class ManagerUI extends Component {
 
     public hidePointer() {
         this.m_pointerDragging.node.active = false;
+    }
+
+    public hideMenu() {
+        this.m_menu.node.active = false;
     }
 
     public async showFarmChickenMenu() {

@@ -1,4 +1,4 @@
-import { _decorator, CCInteger, Color, Component, Node, sp, tween } from 'cc';
+import { _decorator, CCInteger, Color, Component, Node, sp, tween, Vec3 } from 'cc';
 import { AnimalProduct } from './AnimalProduct';
 const { ccclass, property } = _decorator;
 
@@ -81,8 +81,8 @@ export class Animal extends Component {
         return this.m_fodder.active;
     }
 
-    public hasProducts() {
-        return this.m_animalProducts.every(product => product.isDisplayed());
+    public hasCollectableProducts() {
+        return this.m_animalProducts.some(product => product.available());
     }
 
     public feed() {
@@ -101,7 +101,17 @@ export class Animal extends Component {
         });
     }
 
-    public collectProducts() {
-
+    public touchProduct(touchWorldPos: Vec3, customerToWorldPos: Vec3, onCollected: () => void) {
+        this.m_animalProducts.forEach(product => {
+            if (product.available()) {
+                const worldPos = product.node.worldPosition;
+                const distance = Vec3.distance(worldPos, touchWorldPos);
+                if (distance < 50) {
+                    product.collect(customerToWorldPos, () => {
+                        onCollected();
+                    });
+                }
+            }
+        });
     }
 }

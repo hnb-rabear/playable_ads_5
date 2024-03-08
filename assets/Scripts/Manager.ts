@@ -6,6 +6,7 @@ import { ManagerUI } from './ManagerUI';
 import { AnimalFarm } from './AnimalFarm';
 import { AnimalState } from './Animal';
 import { MenuState } from './CattleMenu';
+import { CameraController } from './CameraController';
 const { ccclass, property } = _decorator;
 
 @ccclass('Manager')
@@ -17,6 +18,7 @@ export class Manager extends Component {
     }
 
     @property(Camera) public camera: Camera;
+    @property(CameraController) public cameraController: CameraController;
     @property([Node]) protected m_customerNodes: Node[] = []; // This is CustomerController
     @property([Node]) protected m_stops: Node[] = [];
     @property(Node) protected m_firstStop: Node;
@@ -25,6 +27,7 @@ export class Manager extends Component {
     @property(IsometricZOrderUpdater) protected m_isometricZOrderUpdater: IsometricZOrderUpdater;
 
     protected m_customers: CustomerController[] = [];
+    protected m_curCustomer: CustomerController;
     protected m_animalFarm: AnimalFarm;
 
     protected onLoad(): void {
@@ -52,30 +55,37 @@ export class Manager extends Component {
             this.m_customers[i].moveControl(deltaTime);
     }
 
+    //=====================================================================
+
     protected async showFarmCowMenu() {
+        this.cameraController.activeCam1();
         //Move car to destination 1
         const destinationIdx = this.m_stops.indexOf(this.m_firstStop);
         let reached = false;
-        for (let i = 0; i < this.m_customers.length; i++) {
-            const index = i;
-            const customer = this.m_customers[i];
+        this.m_customers.forEach((customer, i) => {
             customer.moveTo(destinationIdx - i);
             customer.setDelay(0.5 * i);
             customer.onReached = () => {
                 if (i === this.m_customers.length - 1) {
                     reached = true;
-                    ManagerUI.instance.showCowFarmMenu();
                 }
             };
-        }
+        });
         this.m_isometricZOrderUpdater.updateSortingOrder();
         this.m_animalFarm = this.m_cowFarm;
+        this.m_curCustomer = this.m_customers[0];
+        while (!reached) {
+            await new Promise(resolve => {
+                setTimeout(resolve, 500);
+            });
+        }
+        ManagerUI.instance.showCowFarmMenu();
     }
 
     public onDragMoveCattleMenuItem(id: string, uiWorldPos: Vec3) {
 
-        const dragItemScreenPos = ManagerUI.instance.camera.worldToScreen(uiWorldPos);
-        const dragItemWorldPos = this.camera.screenToWorld(dragItemScreenPos);
+        const touchScreenPos = ManagerUI.instance.camera.worldToScreen(uiWorldPos);
+        const touchWorldPos = this.camera.screenToWorld(touchScreenPos);
 
         const menuState = ManagerUI.instance.menu.state;
         const animals = this.m_animalFarm.getAnimals();
@@ -93,12 +103,12 @@ export class Manager extends Component {
                     targetPosition = animal.spotFodder.worldPosition;
                     break;
                 case MenuState.Harvest:
-                    if (!animal.hasProducts())
+                    if (!animal.hasCollectableProducts())
                         continue;
                     targetPosition = animal.spotProducts.worldPosition;
                     break;
             }
-            const distance = Vec3.distance(targetPosition, dragItemWorldPos);
+            const distance = Vec3.distance(targetPosition, touchWorldPos);
             if (distance < 100) {
                 switch (menuState) {
                     case MenuState.Animal:
@@ -108,7 +118,9 @@ export class Manager extends Component {
                         animal.feed();
                         break;
                     case MenuState.Harvest:
-                        animal.collectProducts();
+                        animal.touchProduct(touchWorldPos, this.m_curCustomer.getContainer().worldPosition, () => {
+                            this.m_curCustomer.addProduct();
+                        });
                         break;
                 }
                 ManagerUI.instance.hidePointer();
@@ -135,10 +147,10 @@ export class Manager extends Component {
                 return;
             }
 
-            await new Promise(resolve => setTimeout(resolve, 500));
+            await new Promise(resolve => setTimeout(resolve, 1000));
 
             // create farm products
-            this.m_animalFarm.createAnimalProducts();
+            this.m_animalFarm.createProducts();
 
             await new Promise(resolve => setTimeout(resolve, 1000));
 
@@ -146,25 +158,36 @@ export class Manager extends Component {
             ManagerUI.instance.showCowFarmHarvestMenu();
         }
         else if (menuState === MenuState.Harvest) {
-            const hasAvailableProduct = this.m_animalFarm.hasProducts();
+            const hasAvailableProduct = this.m_animalFarm.hasCollectableProducts();
             if (hasAvailableProduct) {
                 ManagerUI.instance.showCowFarmHarvestingGuide();
                 return;
             }
-        }
-    }
 
-    protected moveToSecondStop() {
-        const destinationIdx = this.m_stops.indexOf(this.m_secondStop);
-        for (let i = 0; i < this.m_customers.length; i++) {
-            const customer = this.m_customers[i];
-            customer.moveTo(destinationIdx - i);
-            customer.setDelay(0.5 * i);
-            this.m_isometricZOrderUpdater.updateSortingOrder();
+            ManagerUI.instance.hideMenu();
+
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            // Move to second destination
+            this.moveToChickenCoop();
         }
     }
 
     public getCowFarm() {
         return this.m_cowFarm;
+    }
+
+    //=====================================================================
+
+    protected async moveToChickenCoop() {
+        this.cameraController.activeCam2();
+        // Move car to destination 2
+        const destinationIdx = this.m_stops.indexOf(this.m_secondStop);
+        for (let i = 0; i < this.m_customers.length; i++) {
+            const customer = this.m_customers[i];
+            customer.moveTo(destinationIdx - i);
+            customer.setDelay(0.5 * i);
+        }
+        this.m_isometricZOrderUpdater.updateSortingOrder();
     }
 }

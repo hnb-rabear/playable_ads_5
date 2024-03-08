@@ -22,9 +22,18 @@ export class CameraController extends Component {
         window.addEventListener('resize', () => {
             this.m_camera.orthoHeight = this.calcOrthoSize();
         });
+    }
 
+    public activeCam1() {
+        this.m_activeCam2 = false;
         this.m_camera.node.setWorldPosition(this.m_camWorldPos1);
         this.m_camera.orthoHeight = this.calcOrthoSize();
+    }
+
+    public activeCam2() {
+        this.m_activeCam2 = true;
+        this.setCameraPos(this.m_camWorldPos2);
+        this.setCameraSize(this.calcOrthoSize());
     }
 
     protected update(dt: number): void {

@@ -6,7 +6,8 @@ export class MoveJumping extends Component {
     @property protected m_autoDeactivate = false;
     @property protected m_jumpDuration = 1;
     @property protected m_maxSpeed = 0;
-    @property({ type: CurveRange }) public m_scaleCurve: CurveRange = new CurveRange();
+    @property protected m_scaleCurve: CurveRange = new CurveRange();
+    @property({ range: [0, 1] }) protected m_scaleCurveFullTime = 0.5;
 
     protected m_delay: number;
     protected m_reached: boolean = false;
@@ -20,22 +21,22 @@ export class MoveJumping extends Component {
     public onMove: (uiWorldPos: Vec3, lerp: number) => void;
 
     public jumpTo(targetWorldPos: Vec3, delay = 0) {
-        this.jumpFromTo(this.node.getWorldPosition(), targetWorldPos, delay);
-        return this;
+        return this.jumpFromTo(this.node.worldPosition, targetWorldPos, delay);
     }
 
     public jumpFromTo(startWorldPos: Vec3, targetWorldPos: Vec3, delay = 0) {
         this.m_startWorldPos.set(startWorldPos);
-        this.m_targetWorldPos = targetWorldPos;
+        this.m_targetWorldPos.set(targetWorldPos);
         this.m_reached = false;
         this.m_elapsedTime = 0;
         this.m_delay = delay;
         this.node.active = true;
+        this.node.setWorldPosition(startWorldPos);
         if (!this.m_initScale || (this.m_initScale.x === 0 && this.m_initScale.y === 0 && this.m_initScale.z === 0)) {
             this.node.getScale(this.m_initScale);
         }
         if (this.m_scaleCurve.mode === CurveRange.Mode.Curve) {
-            const ratio = this.m_scaleCurve.evaluate(this.m_elapsedTime / this.m_jumpDuration, 1);
+            const ratio = this.m_scaleCurve.evaluate(0, 1);
             this.node.setScale(new Vec3(this.m_initScale.x * ratio, this.m_initScale.y * ratio, this.m_initScale.z * ratio));
         }
         if (delay <= 0) {
@@ -68,6 +69,13 @@ export class MoveJumping extends Component {
         if (this.m_maxSpeed !== 0 && direction.length() > this.m_maxSpeed * this.m_elapsedTime)
             direction = direction.normalize().multiplyScalar(this.m_maxSpeed * this.m_elapsedTime);
         this.node.setWorldPosition(direction.add(this.m_startWorldPos));
+
+        if (this.m_scaleCurve.mode === CurveRange.Mode.Curve) {
+            const lerp = this.m_elapsedTime / (this.m_jumpDuration * this.m_scaleCurveFullTime);
+            const ratio = this.m_scaleCurve.evaluate(lerp, 1);
+            this.node.setScale(new Vec3(this.m_initScale.x * ratio, this.m_initScale.y * ratio, this.m_initScale.z * ratio));
+        }
+
         this.onMove && this.onMove(this.node.getWorldPosition(), t);
     }
 
