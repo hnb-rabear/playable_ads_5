@@ -36,6 +36,12 @@ export class AnimalFarm extends Component {
                 return true;
         }
     }
+
+    public createAnimalProducts() {
+        this.m_animals.forEach(animal => {
+            animal.createProducts();
+        });
+    }
 }
 
 

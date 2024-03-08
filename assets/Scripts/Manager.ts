@@ -83,12 +83,18 @@ export class Manager extends Component {
             let targetPosition: Vec3;
             switch (menuState) {
                 case MenuState.Animal:
+                    if (animal.hasAnimal())
+                        continue;
                     targetPosition = animal.spotAnimal.worldPosition;
                     break;
                 case MenuState.Feed:
+                    if (animal.isFeed())
+                        continue;
                     targetPosition = animal.spotFodder.worldPosition;
                     break;
                 case MenuState.Harvest:
+                    if (!animal.hasProducts())
+                        continue;
                     targetPosition = animal.spotProducts.worldPosition;
                     break;
             }
@@ -130,6 +136,7 @@ export class Manager extends Component {
             }
 
             // create farm products
+            this.m_animalFarm.createAnimalProducts();
 
             // Show harvest menu of cow farm
             ManagerUI.instance.showCowFarmHarvestMenu();

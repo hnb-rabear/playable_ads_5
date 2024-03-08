@@ -11,14 +11,14 @@ export enum AnimalState {
 @ccclass('Animal')
 export class Animal extends Component {
 
-    private readonly ANIM_COW_S_APPEAR = 'tha_bo_con'; //cow_s_appear
-    private readonly ANIM_COW_S_IDLE = 'dung_bo_con'; //cow_s_idle
-    private readonly ANIM_COW_S_GROW = 'bo_nho_thanh_bo_to'; //cow_s_grow
-    private readonly ANIM_COW_B_EAT = 'an_bo_to'; //cow_b_eat
-    private readonly ANIM_PIG_S_APPEAR = 'tha_heo_con'; //pig_s_appear
-    private readonly ANIM_PIG_S_IDLE = 'dung_heo_con'; //pig_s_idle
-    private readonly ANIM_PIG_S_DISAPPEAR = 'heo_con_bien_mat'; //pig_s_disappear
-    private readonly ANIM_FOOD_APPEAR = 'tha_co'; //food_appear
+    private readonly ANIM_COW_S_APPEAR = 'cow_s_appear';
+    private readonly ANIM_COW_S_IDLE = 'cow_s_idle';
+    private readonly ANIM_COW_S_GROW = 'cow_s_grow';
+    private readonly ANIM_COW_B_EAT = 'cow_b_eat';
+    private readonly ANIM_PIG_S_APPEAR = 'pig_s_appear';
+    private readonly ANIM_PIG_S_IDLE = 'pig_s_idle';
+    private readonly ANIM_PIG_S_DISAPPEAR = 'pig_s_disappear';
+    private readonly ANIM_FOOD_APPEAR = 'food_appear';
 
     private readonly ANIM_COW_S_APPEAR_IDX = 0;
     private readonly ANIM_COW_S_IDLE_IDX = 1;
@@ -32,7 +32,7 @@ export class Animal extends Component {
     @property(CCInteger) protected m_id: number = 0;
     @property(sp.Skeleton) protected m_anim: sp.Skeleton = null;
     @property(Node) protected m_fodder: Node = null;
-    @property([AnimalProduct]) protected m_products: AnimalProduct[] = [];
+    @property([AnimalProduct]) protected m_animalProducts: AnimalProduct[] = [];
     @property(Node) public spotAnimal: Node;
     @property(Node) public spotProducts: Node;
 
@@ -47,8 +47,8 @@ export class Animal extends Component {
     }
 
     protected start(): void {
-        this.m_products.forEach(product => {
-            product.setDisplay(false);
+        this.m_animalProducts.forEach(product => {
+            product.init();
         });
         this.m_fodder.active = false;
         this.m_anim.node.active = false;
@@ -82,7 +82,7 @@ export class Animal extends Component {
     }
 
     public hasProducts() {
-        return this.m_products.every(product => product.isDisplayed());
+        return this.m_animalProducts.every(product => product.isDisplayed());
     }
 
     public feed() {
@@ -93,6 +93,12 @@ export class Animal extends Component {
         setTimeout(() => {
             this.m_anim.setAnimation(this.ANIM_COW_B_EAT_IDX, this.ANIM_COW_B_EAT, true);
         }, 2000);
+    }
+
+    public createProducts() {
+        this.m_animalProducts.forEach((product, index) => {
+            product.create(index);
+        });
     }
 
     public collectProducts() {
