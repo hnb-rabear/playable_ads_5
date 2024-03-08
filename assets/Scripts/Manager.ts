@@ -107,7 +107,7 @@ export class Manager extends Component {
             let targetPosition: Vec3;
             switch (menuState) {
                 case MenuState.Animal:
-                    if (animal.hasAnimal())
+                    if (animal.hasAnimal() || this.m_animalFarm.id !== id)
                         continue;
                     targetPosition = animal.spotAnimal.worldPosition;
                     break;

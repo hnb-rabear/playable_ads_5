@@ -1,9 +1,10 @@
-import { _decorator, Component, Node, sp } from 'cc';
+import { _decorator, CCString, Component, Node, sp } from 'cc';
 import { Animal, AnimalState } from './Animal';
 const { ccclass, property } = _decorator;
 
 @ccclass('AnimalFarm')
 export class AnimalFarm extends Component {
+    @property(CCString) public id: string = "";
     @property([Animal]) protected m_animals: Animal[] = [];
 
     protected start(): void {

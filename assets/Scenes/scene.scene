@@ -11147,6 +11147,7 @@
     },
     "_enabled": true,
     "__prefab": null,
+    "id": "cow",
     "m_animals": [
       {
         "__id__": 315
