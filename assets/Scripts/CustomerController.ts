@@ -4,7 +4,6 @@ const { ccclass, property } = _decorator;
 
 @ccclass('CustomerController')
 export class CustomerController extends PathFollowing {
-  @property(CCInteger) protected m_index: number = 0;
   @property(Node) protected m_bodyFront: Node;
   @property(Node) protected m_bodyBack: Node;
 

@@ -135,8 +135,12 @@ export class Manager extends Component {
                 return;
             }
 
+            await new Promise(resolve => setTimeout(resolve, 500));
+
             // create farm products
             this.m_animalFarm.createAnimalProducts();
+
+            await new Promise(resolve => setTimeout(resolve, 1000));
 
             // Show harvest menu of cow farm
             ManagerUI.instance.showCowFarmHarvestMenu();

@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Vec3 } from 'cc';
+import { _decorator, Component, CurveRange, Node, Vec3 } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('MoveJumping')
@@ -6,37 +6,38 @@ export class MoveJumping extends Component {
     @property protected m_autoDeactivate = false;
     @property protected m_jumpDuration = 1;
     @property protected m_maxSpeed = 0;
+    @property({ type: CurveRange }) public m_scaleCurve: CurveRange = new CurveRange();
 
     protected m_delay: number;
     protected m_reached: boolean = false;
     protected m_startWorldPos: Vec3 = new Vec3();
     protected m_targetWorldPos: Vec3 = new Vec3();
     protected m_elapsedTime = 0;
+    protected m_initScale: Vec3 = new Vec3();
 
     public onEnd: () => void;
     public onStart: () => void;
+    public onMove: (uiWorldPos: Vec3, lerp: number) => void;
 
     public jumpTo(targetWorldPos: Vec3, delay = 0) {
-        this.m_targetWorldPos = targetWorldPos;
-        this.m_startWorldPos = this.node.getWorldPosition();
-        this.m_reached = false;
-        this.m_elapsedTime = 0;
-        this.m_delay = delay;
-        this.node.active = true;
-        if (delay <= 0) {
-            this.onStart && this.onStart();
-        }
+        this.jumpFromTo(this.node.getWorldPosition(), targetWorldPos, delay);
         return this;
     }
 
     public jumpFromTo(startWorldPos: Vec3, targetWorldPos: Vec3, delay = 0) {
-        this.m_targetWorldPos.set(targetWorldPos);
         this.m_startWorldPos.set(startWorldPos);
+        this.m_targetWorldPos = targetWorldPos;
         this.m_reached = false;
         this.m_elapsedTime = 0;
         this.m_delay = delay;
-        this.node.setWorldPosition(startWorldPos);
         this.node.active = true;
+        if (!this.m_initScale || (this.m_initScale.x === 0 && this.m_initScale.y === 0 && this.m_initScale.z === 0)) {
+            this.node.getScale(this.m_initScale);
+        }
+        if (this.m_scaleCurve.mode === CurveRange.Mode.Curve) {
+            const ratio = this.m_scaleCurve.evaluate(this.m_elapsedTime / this.m_jumpDuration, 1);
+            this.node.setScale(new Vec3(this.m_initScale.x * ratio, this.m_initScale.y * ratio, this.m_initScale.z * ratio));
+        }
         if (delay <= 0) {
             this.onStart && this.onStart();
         }
@@ -67,6 +68,7 @@ export class MoveJumping extends Component {
         if (this.m_maxSpeed !== 0 && direction.length() > this.m_maxSpeed * this.m_elapsedTime)
             direction = direction.normalize().multiplyScalar(this.m_maxSpeed * this.m_elapsedTime);
         this.node.setWorldPosition(direction.add(this.m_startWorldPos));
+        this.onMove && this.onMove(this.node.getWorldPosition(), t);
     }
 
     protected reachTarget() {
