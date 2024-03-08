@@ -1,12 +1,11 @@
-import { _decorator, Camera, Component, Node, tween, Vec2, Vec3, Widget } from 'cc';
+import { _decorator, Camera, Color, Component, instantiate, Node, Prefab, Sprite, tween, Vec2, Vec3, Widget, Animation } from 'cc';
 import { CustomerController } from './CustomerController';
-import { PathFollowing } from './Core/PathFollowing';
 import { IsometricZOrderUpdater } from './Core/IsometricZOrderUpdater';
 import { ManagerUI } from './ManagerUI';
 import { AnimalFarm } from './AnimalFarm';
-import { AnimalState } from './Animal';
 import { MenuState } from './CattleMenu';
 import { CameraController } from './CameraController';
+import { AnimationPlayer } from './Core/AnimationPlayer';
 const { ccclass, property } = _decorator;
 
 @ccclass('Manager')
@@ -23,8 +22,13 @@ export class Manager extends Component {
     @property([Node]) protected m_stops: Node[] = [];
     @property(Node) protected m_firstStop: Node;
     @property(Node) protected m_secondStop: Node;
+    @property(Node) protected m_thirdStop: Node;
     @property(AnimalFarm) protected m_cowFarm: AnimalFarm;
     @property(IsometricZOrderUpdater) protected m_isometricZOrderUpdater: IsometricZOrderUpdater;
+    // Phase 2: Chicken farm
+    @property(Prefab) protected m_vfxCoinPrefab: Prefab;
+    @property(Node) protected m_chickenFarmCoinMoveTo: Node;
+    @property(Animation) protected m_chickenFarm: Animation;
 
     protected m_customers: CustomerController[] = [];
     protected m_curCustomer: CustomerController;
@@ -75,9 +79,7 @@ export class Manager extends Component {
         this.m_animalFarm = this.m_cowFarm;
         this.m_curCustomer = this.m_customers[0];
         while (!reached) {
-            await new Promise(resolve => {
-                setTimeout(resolve, 500);
-            });
+            await new Promise(resolve => setTimeout(resolve, 100));
         }
         ManagerUI.instance.showCowFarmMenu();
     }
@@ -169,7 +171,7 @@ export class Manager extends Component {
             await new Promise(resolve => setTimeout(resolve, 1000));
 
             // Move to second destination
-            this.moveToChickenCoop();
+            this.moveToChickenFarm();
         }
     }
 
@@ -179,15 +181,66 @@ export class Manager extends Component {
 
     //=====================================================================
 
-    protected async moveToChickenCoop() {
+    protected async moveToChickenFarm() {
         this.cameraController.activeCam2();
         // Move car to destination 2
-        const destinationIdx = this.m_stops.indexOf(this.m_secondStop);
-        for (let i = 0; i < this.m_customers.length; i++) {
-            const customer = this.m_customers[i];
+        await this.moveToStopNode(this.m_secondStop);
+
+        // Spawn coins and throw it to the old chicken farm
+        await this.createCoinsOnFarmChicken();
+
+        // Upgrade chicken
+        this.m_chickenFarm.play();
+
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        // Display chicken menu
+        ManagerUI.instance.showFarmChickenMenu();
+
+        // End game
+        await this.moveToStopNode(this.m_thirdStop);
+    }
+
+    protected async createCoinsOnFarmChicken() {
+        const coins: Node[] = [];
+        for (let i = 0; i < 30; i++) {
+            let newNode = coins.find(node => !node.active);
+            const fromPos = this.m_curCustomer.getContainer().worldPosition.clone();
+            if (!newNode) {
+                newNode = instantiate(this.m_vfxCoinPrefab);
+                coins.push(newNode);
+            }
+            newNode.active = true;
+            newNode.setParent(this.node);
+            newNode.setWorldPosition(fromPos);
+            tween(newNode)
+                .to(0.2, { worldPosition: this.m_chickenFarmCoinMoveTo.worldPosition })
+                .call(() => {
+                    newNode.active = false;
+                })
+                .start();
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        await new Promise(resolve => setTimeout(resolve, 100));
+    }
+
+    protected async moveToStopNode(stopNode: Node) {
+        // Move car to destination 2
+        const destinationIdx = this.m_stops.indexOf(stopNode);
+        let reached = false;
+        this.m_customers.forEach((customer, i) => {
             customer.moveTo(destinationIdx - i);
             customer.setDelay(0.5 * i);
-        }
+            customer.onReached = () => {
+                if (i === this.m_customers.length - 1) {
+                    reached = true;
+                }
+            };
+        });
         this.m_isometricZOrderUpdater.updateSortingOrder();
+
+        while (!reached) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
     }
 }

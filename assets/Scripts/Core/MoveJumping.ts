@@ -51,12 +51,13 @@ export class MoveJumping extends Component {
 
         if (this.m_delay > 0) {
             this.m_delay -= deltaTime;
-            this.onStart && this.onStart();
+            if (this.m_delay <= 0)
+                this.onStart && this.onStart();
             return;
         }
 
         this.m_elapsedTime += deltaTime;
-        if (this.m_elapsedTime > this.m_jumpDuration || !this.m_targetWorldPos) {
+        if (this.m_elapsedTime > this.m_jumpDuration) {
             this.reachTarget();
             return;
         }

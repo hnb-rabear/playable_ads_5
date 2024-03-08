@@ -80,7 +80,7 @@
         "__id__": 9
       }
     ],
-    "_active": false,
+    "_active": true,
     "_components": [
       {
         "__id__": 63
@@ -1496,12 +1496,12 @@
     "playOnLoad": true,
     "_clips": [
       {
-        "__uuid__": "efbd5a99-39f5-484d-a6f2-472e6174a280",
+        "__uuid__": "40660abe-856d-4de6-ab96-e2d8ec0ccc49",
         "__expectedType__": "cc.AnimationClip"
       }
     ],
     "_defaultClip": {
-      "__uuid__": "efbd5a99-39f5-484d-a6f2-472e6174a280",
+      "__uuid__": "40660abe-856d-4de6-ab96-e2d8ec0ccc49",
       "__expectedType__": "cc.AnimationClip"
     },
     "_id": ""
@@ -1538,7 +1538,7 @@
         "__id__": 75
       }
     ],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 129
