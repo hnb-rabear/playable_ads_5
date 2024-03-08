@@ -1,7 +1,8 @@
-import { _decorator, Camera, Component, Node, Sprite, Vec3 } from 'cc';
+import { _decorator, AudioSource, Button, Camera, Component, Node, Sprite, Toggle, Vec3 } from 'cc';
 import { CattleMenu, MenuState } from './CattleMenu';
 import { PointerDragging } from './Core/PointerDragging';
 import { Manager } from './Manager';
+import { PointerFocusing } from './Core/PointerFocusing';
 const { ccclass, property } = _decorator;
 
 @ccclass('ManagerUI')
@@ -14,6 +15,10 @@ export class ManagerUI extends Component {
     @property(Camera) public camera: Camera;
     @property(CattleMenu) protected m_menu: CattleMenu;
     @property(PointerDragging) protected m_pointerDragging: PointerDragging = null;
+    @property(Toggle) protected m_togSound: Toggle;
+    @property(Button) protected m_btnOpenStore: Button;
+    @property(AudioSource) protected m_audioSource: AudioSource;
+    @property(PointerFocusing) public pointerFocusing: PointerFocusing;
 
     protected m_horizontalScreen: boolean;
 
@@ -38,6 +43,16 @@ export class ManagerUI extends Component {
                 this.refreshCowFarmHarvestingGuide();
         });
         this.m_pointerDragging.node.active = false;
+        this.m_btnOpenStore.node.on(Button.EventType.CLICK, this.onBtnOpenStorePressed, this);
+        this.m_btnOpenStore.node.active = false;
+        this.m_togSound.node.on(Toggle.EventType.TOGGLE, () => {
+            if (!this.m_togSound.isChecked) {
+                this.m_audioSource.play();
+            } else {
+                this.m_audioSource.pause();
+            }
+        }, this);
+        this.m_togSound.isChecked = false;
     }
 
     //==================================================
@@ -210,6 +225,14 @@ export class ManagerUI extends Component {
 
     protected isHorizontalScreen() {
         return window.innerWidth >= window.innerHeight;
+    }
+
+    public activeButtonStore() {
+        this.m_btnOpenStore.node.active = true;
+    }
+
+    protected onBtnOpenStorePressed() {
+        Manager.instance.openStore();
     }
 }
 

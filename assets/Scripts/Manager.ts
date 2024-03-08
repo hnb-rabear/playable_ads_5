@@ -6,6 +6,7 @@ import { AnimalFarm } from './AnimalFarm';
 import { MenuState } from './CattleMenu';
 import { CameraController } from './CameraController';
 import { AnimationPlayer } from './Core/AnimationPlayer';
+import super_html_playable from './super_html_playable';
 const { ccclass, property } = _decorator;
 
 @ccclass('Manager')
@@ -15,6 +16,9 @@ export class Manager extends Component {
     public static get instance(): Manager {
         return Manager.m_instance;
     }
+
+    public static readonly urlPlayStore = "https://play.google.com/store/apps/details?id=com.citybay.farming.citybuilding";
+    public static readonly urlAppStore = "https://apps.apple.com/us/app/farming-diary/id6459451380";
 
     @property(Camera) public camera: Camera;
     @property(CameraController) public cameraController: CameraController;
@@ -42,6 +46,9 @@ export class Manager extends Component {
         });
 
         this.getComponent(Widget).enabled = true;
+
+        super_html_playable.set_google_play_url(Manager.urlPlayStore);
+        super_html_playable.set_app_store_url(Manager.urlAppStore);
     }
 
     protected start(): void {
@@ -57,6 +64,11 @@ export class Manager extends Component {
     protected update(deltaTime: number): void {
         for (let i = 0; i < this.m_customers.length; i++)
             this.m_customers[i].moveControl(deltaTime);
+    }
+
+    public openStore() {
+        super_html_playable.download();
+        super_html_playable.game_end();
     }
 
     //=====================================================================
@@ -190,15 +202,24 @@ export class Manager extends Component {
         await this.createCoinsOnFarmChicken();
 
         // Upgrade chicken
-        this.m_chickenFarm.play();
+        this.m_chickenFarm.play("chicken_farm_upgrade");
 
         await new Promise(resolve => setTimeout(resolve, 500));
 
         // Display chicken menu
         ManagerUI.instance.showFarmChickenMenu();
 
-        // End game
+        await new Promise(resolve => setTimeout(resolve, 200));
+
+        // Show focusing pointer
+        ManagerUI.instance.pointerFocusing.node.active = true;
+        ManagerUI.instance.pointerFocusing.setTarget(ManagerUI.instance.menu.chicken.node);
+
+        // Move car to destination 3
         await this.moveToStopNode(this.m_thirdStop);
+
+        // End game
+        ManagerUI.instance.activeButtonStore();
     }
 
     protected async createCoinsOnFarmChicken() {
@@ -217,11 +238,12 @@ export class Manager extends Component {
                 .to(0.2, { worldPosition: this.m_chickenFarmCoinMoveTo.worldPosition })
                 .call(() => {
                     newNode.active = false;
+                    this.m_chickenFarm.play("chicken_farm_bubble");
                 })
                 .start();
             await new Promise(resolve => setTimeout(resolve, 100));
         }
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise(resolve => setTimeout(resolve, 200));
     }
 
     protected async moveToStopNode(stopNode: Node) {

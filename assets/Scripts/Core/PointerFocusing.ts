@@ -1,8 +1,10 @@
-import { _decorator, Component, Node, Vec3, Animation, tween } from 'cc';
+import { _decorator, Component, Node, Vec3, Animation, tween, CCBoolean } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('PointerFocusing')
 export class PointerFocusing extends Component {
+    @property(CCBoolean) private m_enableArrow: boolean = true;
+    @property(Node) private m_arrow: Node;
     @property(Animation) private m_pointerAnim: Animation;
 
     private m_target: Node;
@@ -18,6 +20,7 @@ export class PointerFocusing extends Component {
         this.m_targetInitScale = target.scale;
         this.node.setWorldPosition(target.worldPosition);
         this.node.setWorldPosition(this.node.worldPosition.add(new Vec3(0, yOffset, 0)));
+        this.m_arrow.active = this.m_enableArrow;
         this.m_pointerAnim.play();
     }
 
