@@ -24,7 +24,8 @@ export class Manager extends Component {
     @property(AnimalFarm) protected m_cowFarm: AnimalFarm;
     @property(IsometricZOrderUpdater) protected m_isometricZOrderUpdater: IsometricZOrderUpdater;
 
-    private m_customers: CustomerController[] = [];
+    protected m_customers: CustomerController[] = [];
+    protected m_animalFarm: AnimalFarm;
 
     protected onLoad(): void {
         Manager.m_instance = this;
@@ -68,75 +69,76 @@ export class Manager extends Component {
             };
         }
         this.m_isometricZOrderUpdater.updateSortingOrder();
+        this.m_animalFarm = this.m_cowFarm;
     }
 
     public onDragMoveCattleMenuItem(id: string, uiWorldPos: Vec3) {
 
-        const screenPos = ManagerUI.instance.camera.worldToScreen(uiWorldPos);
-        const worldPos = this.camera.screenToWorld(screenPos);
+        const dragItemScreenPos = ManagerUI.instance.camera.worldToScreen(uiWorldPos);
+        const dragItemWorldPos = this.camera.screenToWorld(dragItemScreenPos);
 
-        if (id === 'cow') {
-            const menuState = ManagerUI.instance.menu.state;
-            const animals = this.m_cowFarm.getAnimals();
-            for (const animal of animals) {
-                let targetPosition: Vec3;
+        const menuState = ManagerUI.instance.menu.state;
+        const animals = this.m_animalFarm.getAnimals();
+        for (const animal of animals) {
+            let targetPosition: Vec3;
+            switch (menuState) {
+                case MenuState.Animal:
+                    targetPosition = animal.spotAnimal.worldPosition;
+                    break;
+                case MenuState.Feed:
+                    targetPosition = animal.spotFodder.worldPosition;
+                    break;
+                case MenuState.Harvest:
+                    targetPosition = animal.spotProducts.worldPosition;
+                    break;
+            }
+            const distance = Vec3.distance(targetPosition, dragItemWorldPos);
+            if (distance < 100) {
                 switch (menuState) {
                     case MenuState.Animal:
-                        targetPosition = animal.spotAnimal.worldPosition;
+                        animal.addAnimal();
                         break;
                     case MenuState.Feed:
-                        targetPosition = animal.spotFodder.worldPosition;
+                        animal.feed();
                         break;
                     case MenuState.Harvest:
-                        targetPosition = animal.spotProducts.worldPosition;
+                        animal.collectProducts();
                         break;
                 }
-                const distance = Vec3.distance(targetPosition, worldPos);
-                if (distance < 100) {
-                    switch (menuState) {
-                        case MenuState.Animal:
-                            animal.addAnimal();
-                            break;
-                        case MenuState.Feed:
-                            animal.feed();
-                            break;
-                        case MenuState.Harvest:
-                            animal.collectProducts();
-                            break;
-                    }
-                    ManagerUI.instance.hidePointer();
-                }
+                ManagerUI.instance.hidePointer();
             }
         }
     }
 
     public async onDragEndCattleMenuItem(id: string, uiWorldPos: Vec3) {
-        if (id === 'cow') {
-            const menuState = ManagerUI.instance.menu.state;
-            if (menuState === MenuState.Animal) {
-                const hasEmptySlot = this.m_cowFarm.hasEmptyAnimalSlot();
-                if (hasEmptySlot) {
-                    ManagerUI.instance.showCowFarmAddingGuide();
-                    return;
-                }
-
-                // Show food menu of cow farm
-                ManagerUI.instance.showCowFarmFodderMenu();
+        const menuState = ManagerUI.instance.menu.state;
+        if (menuState === MenuState.Animal) {
+            const hasEmptySlot = this.m_animalFarm.hasEmptyAnimalSlot();
+            if (hasEmptySlot) {
+                ManagerUI.instance.showCowFarmAddingGuide();
+                return;
             }
-            else if (menuState === MenuState.Feed) {
-                const hasEmptyFodderSlot = this.m_cowFarm.hasEmptyFodderSlot();
-                if (hasEmptyFodderSlot) {
-                    ManagerUI.instance.showCowFarmFeedingGuide();
-                }
 
-                // Show harvest menu of cow farm
-                ManagerUI.instance.showCowFarmHarvestMenu();
+            // Show food menu of cow farm
+            ManagerUI.instance.showCowFarmFodderMenu();
+        }
+        else if (menuState === MenuState.Feed) {
+            const hasEmptyFodderSlot = this.m_animalFarm.hasEmptyFodderSlot();
+            if (hasEmptyFodderSlot) {
+                ManagerUI.instance.showCowFarmFeedingGuide();
+                return;
             }
-            else if (menuState === MenuState.Harvest) {
-                const hasAvailableProduct = this.m_cowFarm.hasProducts();
-                if (hasAvailableProduct) {
-                    ManagerUI.instance.showCowFarmHarvestingGuide();
-                }
+
+            // create farm products
+
+            // Show harvest menu of cow farm
+            ManagerUI.instance.showCowFarmHarvestMenu();
+        }
+        else if (menuState === MenuState.Harvest) {
+            const hasAvailableProduct = this.m_animalFarm.hasProducts();
+            if (hasAvailableProduct) {
+                ManagerUI.instance.showCowFarmHarvestingGuide();
+                return;
             }
         }
     }

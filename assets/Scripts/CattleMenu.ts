@@ -19,8 +19,8 @@ export class CattleMenu extends MenuBar {
     @property(CattleMenuItem) public fodder: CattleMenuItem = null;
     @property(CattleMenuItem) public basket: CattleMenuItem = null;
 
-    protected m_animalId: string = null;
-    protected m_state: MenuState = MenuState.None;
+    @property({ readonly: true }) protected m_animalId: string = null;
+    @property({ readonly: true }) protected m_state: MenuState = MenuState.None;
     public get state() {
         return this.m_state;
     }
