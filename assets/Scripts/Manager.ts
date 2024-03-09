@@ -1,4 +1,4 @@
-import { _decorator, Camera, Color, Component, instantiate, Node, Prefab, Sprite, tween, Vec2, Vec3, Widget, Animation } from 'cc';
+import { _decorator, Camera, Color, Component, instantiate, Node, Prefab, Sprite, tween, Vec2, Vec3, Widget, Animation, math } from 'cc';
 import { CustomerController } from './CustomerController';
 import { IsometricZOrderUpdater } from './Core/IsometricZOrderUpdater';
 import { ManagerUI } from './ManagerUI';
@@ -7,6 +7,8 @@ import { MenuState } from './CattleMenu';
 import { CameraController } from './CameraController';
 import { AnimationPlayer } from './Core/AnimationPlayer';
 import super_html_playable from './super_html_playable';
+import { PathFollowing } from './Core/PathFollowing';
+import { makeSmoothCurve } from './Core/RUtil';
 const { ccclass, property } = _decorator;
 
 @ccclass('Manager')
@@ -76,23 +78,9 @@ export class Manager extends Component {
     protected async showFarmCowMenu() {
         this.cameraController.activeCam1();
         //Move car to destination 1
-        const destinationIdx = this.m_stops.indexOf(this.m_firstStop);
-        let reached = false;
-        this.m_customers.forEach((customer, i) => {
-            customer.moveTo(destinationIdx - i);
-            customer.setDelay(0.5 * i);
-            customer.onReached = () => {
-                if (i === this.m_customers.length - 1) {
-                    reached = true;
-                }
-            };
-        });
-        this.m_isometricZOrderUpdater.updateSortingOrder();
+        await this.moveToStopNode(this.m_firstStop);
         this.m_animalFarm = this.m_cowFarm;
         this.m_curCustomer = this.m_customers[0];
-        while (!reached) {
-            await new Promise(resolve => setTimeout(resolve, 100));
-        }
         ManagerUI.instance.showCowFarmMenu();
     }
 
@@ -199,7 +187,7 @@ export class Manager extends Component {
         await this.moveToStopNode(this.m_secondStop);
 
         // Spawn coins and throw it to the old chicken farm
-        await this.createCoinsOnFarmChicken();
+        await this.createCoinsOnFarmChicken2();
 
         // Upgrade chicken
         this.m_chickenFarm.play("chicken_farm_upgrade");
@@ -245,6 +233,39 @@ export class Manager extends Component {
         }
         await new Promise(resolve => setTimeout(resolve, 200));
     }
+
+    protected async createCoinsOnFarmChicken2() {
+        const coins: PathFollowing[] = [];
+        const fromPos = this.m_curCustomer.getContainer().worldPosition.clone();
+        const toPos = this.m_chickenFarmCoinMoveTo.worldPosition.clone();
+        for (let i = 0; i < 30; i++) {
+            let item = coins.find(item => !item.node.active);
+            if (!item) {
+                const newNode = instantiate(this.m_vfxCoinPrefab);
+                item = newNode.addComponent(PathFollowing);
+                coins.push(item);
+            }
+            item.node.active = true;
+            item.node.setParent(this.node);
+            item.node.setWorldPosition(fromPos);
+            const path = [
+                fromPos,
+                new Vec3(math.lerp(fromPos.x, toPos.x, 0.25), toPos.y + 100, toPos.z),
+                new Vec3(math.lerp(fromPos.x, toPos.x, 0.5), toPos.y + 300, toPos.z),
+                new Vec3(math.lerp(fromPos.x, toPos.x, 0.75), toPos.y + 100, toPos.z),
+                toPos
+            ];
+            const curvePath = makeSmoothCurve(path, 5);
+            item.initPathWorldPos(0, curvePath, true);
+            item.setMoveSpeed(1000);
+            item.onReached = () => {
+                item.node.active = false;
+            };
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        await new Promise(resolve => setTimeout(resolve, 200));
+    }
+
 
     protected async moveToStopNode(stopNode: Node) {
         // Move car to destination 2
