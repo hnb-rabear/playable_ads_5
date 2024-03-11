@@ -109,9 +109,8 @@ export class CameraController extends Component {
         //     orthoHeight = this.calcOrthoHeight(verticalWidth);
         // }
         if (screenRatio > 1) {
-            const preferredWidth = this.m_activeCam2 ? this.m_horizontalCam2.preferredWidth : this.m_horizontalCam1.preferredWidth;
-            //const preferredHeight = this.m_activeCam2 ? this.m_horizontalCam2.preferredHeight : this.m_horizontalCam1.preferredHeight;
-            orthoHeight = preferredWidth / screenRatio;
+            const preferredHeight = this.m_activeCam2 ? this.m_horizontalCam2.preferredHeight : this.m_horizontalCam1.preferredHeight;
+            orthoHeight = preferredHeight;
         } else {
             const preferredWidth = this.m_activeCam2 ? this.m_verticalCam2.preferredWidth : this.m_verticalCam1.preferredWidth;
             orthoHeight = preferredWidth / screenRatio;

@@ -6,7 +6,6 @@ export class MoveJumping extends Component {
     @property(CCBoolean) protected m_autoDeactivate = false;
     @property(CCFloat) protected m_jumpDuration = 1;
     @property(CCInteger) protected m_maxSpeed = 0;
-    @property(CurveRange) public m_scaleCurve: CurveRange;
     @property({ range: [0, 1] }) protected m_scaleCurveFullTime = 0.5;
 
     protected m_delay: number;
@@ -15,6 +14,7 @@ export class MoveJumping extends Component {
     protected m_targetWorldPos: Vec3 = new Vec3();
     protected m_elapsedTime = 0;
     protected m_initScale: Vec3 = new Vec3();
+    protected m_scaleCurve: CurveRange;
 
     public onEnd: () => void;
     public onStart: () => void;
