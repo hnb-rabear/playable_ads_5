@@ -1,4 +1,4 @@
-import { _decorator, CCBoolean, CCInteger, Component, CurveRange, Enum, math, Node, Vec3 } from 'cc';
+import { _decorator, CCBoolean, CCInteger, Component, CurveRange, Enum, Graphics, Line, math, Node, Vec3 } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('PathFollowing')
@@ -8,6 +8,8 @@ export class PathFollowing extends Component {
     @property(CCInteger) protected m_moveSpeed: number = 0;
     @property([Node]) protected m_pathNode: Node[] = [];
     @property([Vec3]) protected m_pathWorldPos: Vec3[] = [];
+    @property(CCBoolean) protected m_debug: boolean = false;
+    @property(Line) protected m_debugLine: Line;
 
     @property({ readonly: true }) protected m_reached: boolean = false;
     public get reached(): boolean {
@@ -39,7 +41,7 @@ export class PathFollowing extends Component {
     }
 
     protected update(deltaTime: number): void {
-        if (!this.m_autoMove)
+        if (!this.m_autoMove || this.m_destinationIndex === 0)
             return;
         const reached = this.move(deltaTime);
         if (reached && !this.m_reached) {
@@ -63,8 +65,16 @@ export class PathFollowing extends Component {
         this.m_movingDuration = 0;
         this.m_destinationIndex = 0;
         this.m_maxDuration = 0;
-        if (this.m_pathNode.length > 0)
+        if (this.m_pathNode.length > 0) {
             this.node.setWorldPosition(this.m_pathNode[this.m_targetStopIndex].worldPosition);
+            if (this.m_debugLine) {
+                this.m_debugLine.node.active = this.m_debug;
+                if (this.m_debug) {
+                    var positions = this.m_pathNode.map((node) => node.worldPosition);
+                    this.m_debugLine.positions = positions as any;
+                }
+            }
+        }
     }
 
     public initPathWorldPos(idx: number, path: Vec3[], autoMove: boolean): void {
@@ -78,8 +88,15 @@ export class PathFollowing extends Component {
         this.m_movingDuration = 0;
         this.m_destinationIndex = 0;
         this.m_maxDuration = 0;
-        if (this.m_pathWorldPos.length > 0)
+        if (this.m_pathWorldPos.length > 0) {
             this.node.setWorldPosition(this.m_pathWorldPos[this.m_targetStopIndex]);
+            if (this.m_debugLine) {
+                this.m_debugLine.node.active = this.m_debug;
+                if (this.m_debug) {
+                    this.m_debugLine.positions = this.m_pathWorldPos as any;
+                }
+            }
+        }
     }
 
     public restart() {

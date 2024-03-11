@@ -187,7 +187,13 @@ export class Manager extends Component {
         await this.moveToStopNode(this.m_secondStop);
 
         // Spawn coins and throw it to the old chicken farm
-        await this.createCoinsOnFarmChicken2();
+        const fromPos = this.m_curCustomer.getContainer().worldPosition.clone();
+        const toPos = this.m_chickenFarmCoinMoveTo.worldPosition.clone();
+        this.createCoinsVFX(fromPos, toPos, 26, 600, null);
+        this.createCoinsVFX(fromPos, toPos, 28, 500, null);
+        await this.createCoinsVFX(fromPos, toPos, 30, 400, () => {
+            this.m_chickenFarm.play("chicken_farm_bubble");
+        });
 
         // Upgrade chicken
         this.m_chickenFarm.play("chicken_farm_upgrade");
@@ -234,36 +240,43 @@ export class Manager extends Component {
         await new Promise(resolve => setTimeout(resolve, 200));
     }
 
-    protected async createCoinsOnFarmChicken2() {
+    protected async createCoinsVFX(fromPos: Vec3, toPos: Vec3, totalCoins: number, curveFactor: number, onCoinReached: () => void) {
         const coins: PathFollowing[] = [];
-        const fromPos = this.m_curCustomer.getContainer().worldPosition.clone();
-        const toPos = this.m_chickenFarmCoinMoveTo.worldPosition.clone();
-        for (let i = 0; i < 30; i++) {
+        let reached = false;
+        for (let i = 0; i < totalCoins; i++) {
+            const index = i;
             let item = coins.find(item => !item.node.active);
             if (!item) {
                 const newNode = instantiate(this.m_vfxCoinPrefab);
-                item = newNode.addComponent(PathFollowing);
+                item = newNode.getComponent(PathFollowing);
                 coins.push(item);
             }
             item.node.active = true;
             item.node.setParent(this.node);
             item.node.setWorldPosition(fromPos);
-            const path = [
+            let path = [
                 fromPos,
-                new Vec3(math.lerp(fromPos.x, toPos.x, 0.25), toPos.y + 100, toPos.z),
-                new Vec3(math.lerp(fromPos.x, toPos.x, 0.5), toPos.y + 300, toPos.z),
-                new Vec3(math.lerp(fromPos.x, toPos.x, 0.75), toPos.y + 100, toPos.z),
+                new Vec3(math.lerp(fromPos.x, toPos.x, 0.25) - curveFactor, toPos.y + curveFactor, toPos.z),
+                new Vec3(math.lerp(fromPos.x, toPos.x, 0.5), toPos.y + curveFactor * 2, toPos.z),
+                new Vec3(math.lerp(fromPos.x, toPos.x, 0.75) + curveFactor, toPos.y + curveFactor, toPos.z),
                 toPos
             ];
-            const curvePath = makeSmoothCurve(path, 5);
-            item.initPathWorldPos(0, curvePath, true);
-            item.setMoveSpeed(1000);
+            path = makeSmoothCurve(path, 5);
+            item.initPathWorldPos(0, path, true);
+            item.setMoveSpeed(1200);
+            item.moveTo();
             item.onReached = () => {
                 item.node.active = false;
+                onCoinReached && onCoinReached();
+                if (index == totalCoins - 1) {
+                    reached = true;
+                }
             };
             await new Promise(resolve => setTimeout(resolve, 100));
         }
-        await new Promise(resolve => setTimeout(resolve, 200));
+        while (!reached) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
     }
 
 
