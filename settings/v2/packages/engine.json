@@ -18,7 +18,7 @@
         "_value": true
       },
       "skeletal-animation": {
-        "_value": false
+        "_value": true
       },
       "3d": {
         "_value": false
@@ -116,7 +116,7 @@
         "_value": true
       },
       "marionette": {
-        "_value": false
+        "_value": true
       },
       "custom-pipeline": {
         "_value": false
@@ -131,9 +131,11 @@
       "gfx-webgl",
       "gfx-webgl2",
       "intersection-2d",
+      "marionette",
       "particle-2d",
       "physics-2d-box2d",
       "profiler",
+      "skeletal-animation",
       "spine",
       "tiled-map",
       "tween",
