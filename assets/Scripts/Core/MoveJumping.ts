@@ -1,12 +1,12 @@
-import { _decorator, Component, CurveRange, Node, Vec3 } from 'cc';
+import { _decorator, CCBoolean, CCFloat, CCInteger, Component, CurveRange, Node, Vec3 } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('MoveJumping')
 export class MoveJumping extends Component {
-    @property protected m_autoDeactivate = false;
-    @property protected m_jumpDuration = 1;
-    @property protected m_maxSpeed = 0;
-    @property protected m_scaleCurve: CurveRange = new CurveRange();
+    @property(CCBoolean) protected m_autoDeactivate = false;
+    @property(CCFloat) protected m_jumpDuration = 1;
+    @property(CCInteger) protected m_maxSpeed = 0;
+    @property(CurveRange) public m_scaleCurve: CurveRange;
     @property({ range: [0, 1] }) protected m_scaleCurveFullTime = 0.5;
 
     protected m_delay: number;
@@ -35,7 +35,7 @@ export class MoveJumping extends Component {
         if (!this.m_initScale || (this.m_initScale.x === 0 && this.m_initScale.y === 0 && this.m_initScale.z === 0)) {
             this.node.getScale(this.m_initScale);
         }
-        if (this.m_scaleCurve.mode === CurveRange.Mode.Curve) {
+        if (this.m_scaleCurve && this.m_scaleCurve.mode === CurveRange.Mode.Curve) {
             const ratio = this.m_scaleCurve.evaluate(0, 1);
             this.node.setScale(new Vec3(this.m_initScale.x * ratio, this.m_initScale.y * ratio, this.m_initScale.z * ratio));
         }
@@ -71,7 +71,7 @@ export class MoveJumping extends Component {
             direction = direction.normalize().multiplyScalar(this.m_maxSpeed * this.m_elapsedTime);
         this.node.setWorldPosition(direction.add(this.m_startWorldPos));
 
-        if (this.m_scaleCurve.mode === CurveRange.Mode.Curve) {
+        if (this.m_scaleCurve && this.m_scaleCurve.mode === CurveRange.Mode.Curve) {
             const lerp = this.m_elapsedTime / (this.m_jumpDuration * this.m_scaleCurveFullTime);
             const ratio = this.m_scaleCurve.evaluate(lerp, 1);
             this.node.setScale(new Vec3(this.m_initScale.x * ratio, this.m_initScale.y * ratio, this.m_initScale.z * ratio));

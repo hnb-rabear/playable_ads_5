@@ -36,7 +36,7 @@ export class MenuBar extends Component {
             // Left Center Right Horizontal_Stretch
             widget.isAbsoluteRight = false;
             widget.isAlignRight = true;
-            widget.right = 0.1;
+            widget.right = 0.05;
             // Top Middle Bottom Vertical_Stretch
             widget.isAbsoluteVerticalCenter = false;
             widget.isAlignVerticalCenter = true;
