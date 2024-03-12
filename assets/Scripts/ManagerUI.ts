@@ -234,6 +234,12 @@ export class ManagerUI extends Component {
     protected onBtnOpenStorePressed() {
         Manager.instance.openStore();
     }
+
+    public convertToUIPosition(worldNode: Node) {
+        const screenPos = this.camera.worldToScreen(worldNode.worldPosition);
+        const uiPos = this.camera.screenToWorld(screenPos);
+        return uiPos;
+    }
 }
 
 

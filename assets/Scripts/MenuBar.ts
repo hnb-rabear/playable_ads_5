@@ -3,10 +3,8 @@ const { ccclass, property } = _decorator;
 
 @ccclass('MenuBar')
 export class MenuBar extends Component {
-    protected start(): void {
-        const widget = this.getComponent(Widget);
-        widget.alignMode = Widget.AlignMode.ALWAYS;
 
+    protected start(): void {
         const layout = this.getComponent(Layout);
         layout.padding = 50;
         layout.paddingLeft = 50;
@@ -25,18 +23,17 @@ export class MenuBar extends Component {
     }
 
     protected refreshScreenRatio() {
-        const isHorizontal = window.innerWidth >= window.innerHeight;
-
+        const screenRatio = window.innerWidth / window.innerHeight;
         const layout = this.getComponent(Layout);
         const uiTransform = this.getComponent(UITransform);
         const widget = this.getComponent(Widget);
-        if (isHorizontal) {
+        if (screenRatio > 1) {
             uiTransform.contentSize.set(300, 300);
             layout.type = Layout.Type.VERTICAL;
             // Left Center Right Horizontal_Stretch
             widget.isAbsoluteRight = false;
             widget.isAlignRight = true;
-            widget.right = 0.05;
+            widget.right = 0.1;
             // Top Middle Bottom Vertical_Stretch
             widget.isAbsoluteVerticalCenter = false;
             widget.isAlignVerticalCenter = true;

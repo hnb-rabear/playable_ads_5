@@ -1,4 +1,4 @@
-import { _decorator, CCBoolean, CCInteger, Component, CurveRange, Enum, Graphics, Line, math, Node, Vec3 } from 'cc';
+import { _decorator, CCBoolean, CCInteger, Component, Enum, Graphics, Line, math, Node, Vec3 } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('PathFollowing')
@@ -124,7 +124,7 @@ export class PathFollowing extends Component {
         this.m_reached = false;
         this.m_movingDuration = 0;
         this.m_destinationIndex = destinationIdx;
-        this.m_maxDuration = this.getLinerDurationFromTo(this.m_targetStopIndex, this.m_destinationIndex);
+        this.m_maxDuration = this.getDurationFromTo(this.m_targetStopIndex, this.m_destinationIndex);
     }
 
     public setDelay(delay: number): void {
@@ -195,7 +195,7 @@ export class PathFollowing extends Component {
         return this.getDistanceFromTo(0, this.totalStops - 1);
     }
 
-    public getLinerDurationFromStart() {
+    public getDurationFromStart() {
         return this.getDistanceFromStart() / this.m_moveSpeed;
     }
 
@@ -222,7 +222,7 @@ export class PathFollowing extends Component {
         return distance;
     }
 
-    public getLinerDurationFromTo(fromIdx: number, toIdx: number) {
+    public getDurationFromTo(fromIdx: number, toIdx: number) {
         return this.getDistanceFromTo(fromIdx, toIdx) / this.m_moveSpeed;
     }
 

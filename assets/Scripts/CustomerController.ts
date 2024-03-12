@@ -33,12 +33,14 @@ export class CustomerController extends PathFollowing {
     this.m_value += 1;
     this.m_frontContainers.forEach((container, index) => {
       const active = index <= this.m_value / 2;
-      if (this.m_bodyFront.active && container.active != active && active) {
-        container.setScale(new Vec3(0, 0, 0));
-        tween(container)
-          .delay(index * 0.1)
-          .to(0.5, { scale: new Vec3(1, 1, 1) })
-          .start();
+      if (this.m_bodyFront.active && active) {
+        if (container.active != active) {
+          container.setScale(new Vec3(0, 0, 0));
+          tween(container)
+            .delay(index * 0.1)
+            .to(0.3, { scale: new Vec3(1, 1, 1) })
+            .start();
+        }
       } else {
         container.setScale(new Vec3(1, 1, 1));
       }
@@ -46,12 +48,14 @@ export class CustomerController extends PathFollowing {
     });
     this.m_backContainers.forEach((container, index) => {
       const active = index <= this.m_value / 2;
-      if (this.m_bodyBack.active && container.active != active && active) {
-        container.setScale(new Vec3(0, 0, 0));
-        tween(container)
-          .delay(index * 0.1)
-          .to(0.5, { scale: new Vec3(1, 1, 1) })
-          .start();
+      if (this.m_bodyBack.active && active) {
+        if (container.active != active) {
+          container.setScale(new Vec3(0, 0, 0));
+          tween(container)
+            .delay(index * 0.1)
+            .to(0.3, { scale: new Vec3(1, 1, 1) })
+            .start();
+        }
       } else {
         container.setScale(new Vec3(1, 1, 1));
       }

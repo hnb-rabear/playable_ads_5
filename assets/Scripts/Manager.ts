@@ -189,9 +189,9 @@ export class Manager extends Component {
         // Spawn coins and throw it to the old chicken farm
         const fromPos = this.m_curCustomer.getContainer().worldPosition.clone();
         const toPos = this.m_chickenFarmCoinMoveTo.worldPosition.clone();
-        this.createCoinsVFX(fromPos, toPos, 26, 600, null);
-        this.createCoinsVFX(fromPos, toPos, 28, 500, null);
-        await this.createCoinsVFX(fromPos, toPos, 30, 400, () => {
+        this.createCoinsVFX(fromPos, toPos, 10, 600, null);
+        this.createCoinsVFX(fromPos, toPos, 12, 500, null);
+        await this.createCoinsVFX(fromPos, toPos, 14, 400, () => {
             this.m_chickenFarm.play("chicken_farm_bubble");
         });
 
@@ -208,12 +208,10 @@ export class Manager extends Component {
         // Show focusing pointer
         ManagerUI.instance.pointerFocusing.node.active = true;
         ManagerUI.instance.pointerFocusing.setTarget(ManagerUI.instance.menu.chicken.node);
+        ManagerUI.instance.activeButtonStore();
 
         // Move car to destination 3
         await this.moveToStopNode(this.m_thirdStop);
-
-        // End game
-        ManagerUI.instance.activeButtonStore();
     }
 
     protected async createCoinsOnFarmChicken() {
@@ -263,7 +261,7 @@ export class Manager extends Component {
             ];
             path = makeSmoothCurve(path, 5);
             item.initPathWorldPos(0, path, true);
-            item.setMoveSpeed(1200);
+            item.setMoveSpeed(1500);
             item.moveTo();
             item.onReached = () => {
                 item.node.active = false;
@@ -272,6 +270,10 @@ export class Manager extends Component {
                     reached = true;
                 }
             };
+            item.node.setScale(new Vec3(0.3, 0.3, 0.3));
+            tween(item.node)
+                .to(item.getDurationFromStart() / 2, { scale: Vec3.ONE })
+                .start();
             await new Promise(resolve => setTimeout(resolve, 100));
         }
         while (!reached) {

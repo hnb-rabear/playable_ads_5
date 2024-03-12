@@ -12,6 +12,9 @@ export class AutoResizeUI extends Component {
         window.addEventListener('resize', () => {
             this.resize();
         });
+    }
+
+    protected onEnable(): void {
         this.resize();
     }
 

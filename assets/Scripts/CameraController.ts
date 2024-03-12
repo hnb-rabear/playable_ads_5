@@ -1,26 +1,19 @@
-import { _decorator, Camera, CCBoolean, CCInteger, Component, Label, Node, tween, Vec2, Vec3 } from 'cc';
+import { _decorator, Camera, CCBoolean, CCInteger, Component, Label, Node, tween, UITransform, Vec2, Vec3 } from 'cc';
 const { ccclass, property } = _decorator;
-
-@ccclass('StandardCameraConfig')
-export class StandardCameraConfig {
-    @property(Vec3) public position = new Vec3(0, 0, 0);
-    @property(CCInteger) public preferredWidth: number = 0;
-    @property(CCInteger) public preferredHeight: number = 0;
-}
 
 @ccclass('CameraController')
 export class CameraController extends Component {
 
     @property(Camera) protected m_camera: Camera;
 
-    @property(StandardCameraConfig) private m_horizontalCam1: StandardCameraConfig = new StandardCameraConfig();
-    @property(StandardCameraConfig) private m_verticalCam1: StandardCameraConfig = new StandardCameraConfig();
-    @property(StandardCameraConfig) private m_horizontalCam2: StandardCameraConfig = new StandardCameraConfig();
-    @property(StandardCameraConfig) private m_verticalCam2: StandardCameraConfig = new StandardCameraConfig();
+    @property(UITransform) private m_horizontalCam1: UITransform = new UITransform();
+    @property(UITransform) private m_verticalCam1: UITransform = new UITransform();
+    @property(UITransform) private m_horizontalCam2: UITransform = new UITransform();
+    @property(UITransform) private m_verticalCam2: UITransform = new UITransform();
     @property(Label) private m_lblDebug: Label = null;
-    @property(CCBoolean) private m_debug: boolean = false;
 
     private m_activeCam2: boolean = false;
+    private m_lockByTween: boolean = false;
 
     protected start(): void {
         window.addEventListener('resize', () => {
@@ -43,16 +36,20 @@ export class CameraController extends Component {
 
     private getCamWorldPos() {
         const isHorizontal = window.innerWidth >= window.innerHeight;
+        let targetPos: Vec3 = new Vec3();
         if (this.m_activeCam2) {
             if (isHorizontal)
-                return this.m_horizontalCam2.position;
-            return this.m_verticalCam2.position;
+                targetPos.set(this.m_horizontalCam2.node.getWorldPosition());
+            else
+                targetPos.set(this.m_verticalCam2.node.getWorldPosition());
         }
         else {
             if (isHorizontal)
-                return this.m_horizontalCam1.position;
-            return this.m_verticalCam1.position;
+                targetPos.set(this.m_horizontalCam1.node.getWorldPosition());
+            else
+                targetPos.set(this.m_verticalCam1.node.getWorldPosition());
         }
+        return new Vec3(targetPos.x, targetPos.y, this.m_camera.node.worldPosition.z);
     }
 
     public activeCam2() {
@@ -62,7 +59,7 @@ export class CameraController extends Component {
     }
 
     protected update(dt: number): void {
-        if (this.m_debug) {
+        if (!this.m_lockByTween) {
             this.m_camera.node.setWorldPosition(this.getCamWorldPos());
             this.m_camera.orthoHeight = this.calcOrthoSize();
         }
@@ -87,33 +84,28 @@ export class CameraController extends Component {
             return;
         }
         duration = Math.min(duration, 1);
-        tween(this.m_camera.node).to(duration, { worldPosition: worldPos }).start();
+        this.m_lockByTween = true;
+        tween(this.m_camera.node)
+            .to(duration, { worldPosition: worldPos })
+            .call(() => {
+                this.m_lockByTween = false;
+            })
+            .start();
     }
 
     protected calcOrthoSize() {
         let orthoHeight = 0;
-        // const standardRatio = 1.2;
-        let screenRatio = window.innerWidth / window.innerHeight;
-        // if (ratio >= standardRatio) {
-        //     const horizontalWidth = this.m_activeCam2 ? this.m_horizontalCam2.width : this.m_horizontalCam1.width;
-        //     const standardRatio = 4 / 3;
-        //     if (ratio <= standardRatio) {
-        //         orthoHeight = this.calcOrthoHeight(horizontalWidth);
-        //     }
-        //     else {
-        //         orthoHeight = horizontalWidth / standardRatio;
-        //     }
-        // }
-        // else {
-        //     const verticalWidth = this.m_activeCam2 ? this.m_verticalCam2.width : this.m_verticalCam1.width;
-        //     orthoHeight = this.calcOrthoHeight(verticalWidth);
-        // }
+        const screenRatio = window.innerWidth / window.innerHeight;
         if (screenRatio > 1) {
-            const preferredHeight = this.m_activeCam2 ? this.m_horizontalCam2.preferredHeight : this.m_horizontalCam1.preferredHeight;
-            orthoHeight = preferredHeight;
+            const preferredHeight = this.m_activeCam2
+                ? this.m_horizontalCam2.contentSize.height
+                : this.m_horizontalCam1.contentSize.height;
+            orthoHeight = preferredHeight / 2;
         } else {
-            const preferredWidth = this.m_activeCam2 ? this.m_verticalCam2.preferredWidth : this.m_verticalCam1.preferredWidth;
-            orthoHeight = preferredWidth / screenRatio;
+            const preferredWidth = this.m_activeCam2
+                ? this.m_verticalCam2.contentSize.width
+                : this.m_verticalCam1.contentSize.width;
+            orthoHeight = preferredWidth / screenRatio / 2;
         }
         return orthoHeight;
     }

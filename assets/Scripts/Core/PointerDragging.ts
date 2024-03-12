@@ -1,4 +1,4 @@
-import { _decorator, CCInteger, Component, CurveRange, Node, Sprite, SpriteFrame, Animation } from 'cc';
+import { _decorator, CCInteger, Component, Node, Sprite, SpriteFrame, Animation } from 'cc';
 import { PathFollowing } from './PathFollowing';
 const { ccclass, property } = _decorator;
 
