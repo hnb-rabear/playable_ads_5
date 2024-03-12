@@ -99,6 +99,26 @@ export class PathFollowing extends Component {
         }
     }
 
+    private m_initSpeed: number = 0;
+
+    // Called after init
+    public setFixedDuration(time: number) {
+        this.m_maxDuration = time;
+        if (this.m_initSpeed === 0)
+            this.m_initSpeed = this.m_moveSpeed;
+        this.m_moveSpeed = this.getDistanceFromStart() / time;
+    }
+
+    // Called after init
+    public setMinDuration(time: number) {
+        const duration = this.getDurationFromStart();
+        if (duration < time) {
+            this.setFixedDuration(time);
+        } else if (this.m_initSpeed > 0) {
+            this.m_moveSpeed = this.m_initSpeed;
+        }
+    }
+
     public restart() {
         if (this.m_pathNode.length > 0)
             this.initPathNode(this.m_index, this.m_pathNode, this.m_autoMove);

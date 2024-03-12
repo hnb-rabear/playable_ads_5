@@ -86,6 +86,7 @@ export class ManagerUI extends Component {
             this.m_pointerDragging.node.active = true;
             this.m_pointerDragging.setSptDisplay(this.m_menu.cow.node.getComponent(Sprite).spriteFrame);
             this.m_pointerDragging.initPathWorldPos(0, pointerPath, true);
+            this.m_pointerDragging.setMinDuration(2);
             this.m_pointerDragging.moveTo();
         }
     }
@@ -136,6 +137,7 @@ export class ManagerUI extends Component {
             this.m_pointerDragging.node.active = true;
             this.m_pointerDragging.setSptDisplay(this.m_menu.fodder.node.getComponent(Sprite).spriteFrame);
             this.m_pointerDragging.initPathWorldPos(0, pointerPath, true);
+            this.m_pointerDragging.setMinDuration(2);
             this.m_pointerDragging.moveTo();
         }
     }
@@ -185,6 +187,7 @@ export class ManagerUI extends Component {
             this.m_pointerDragging.node.active = true;
             this.m_pointerDragging.setSptDisplay(this.m_menu.basket.node.getComponent(Sprite).spriteFrame);
             this.m_pointerDragging.initPathWorldPos(0, pointerPath, true);
+            this.m_pointerDragging.setMinDuration(2);
             this.m_pointerDragging.moveTo();
         }
     }
