@@ -95,7 +95,7 @@ export class Manager extends Component {
             let targetPosition: Vec3;
             switch (menuState) {
                 case MenuState.Animal:
-                    if (animal.hasAnimal() || this.m_animalFarm.id !== id)
+                    if (animal.hasAnimal())
                         continue;
                     targetPosition = animal.spotAnimal.worldPosition;
                     break;
@@ -114,7 +114,7 @@ export class Manager extends Component {
             if (distance < 100) {
                 switch (menuState) {
                     case MenuState.Animal:
-                        animal.addAnimal();
+                        animal.addAnimal(id);
                         break;
                     case MenuState.Feed:
                         animal.feed();
@@ -125,14 +125,18 @@ export class Manager extends Component {
                         });
                         break;
                 }
-                ManagerUI.instance.hidePointer();
             }
+            ManagerUI.instance.hidePointer();
         }
     }
 
     public async onDragEndCattleMenuItem(id: string, uiWorldPos: Vec3) {
         const menuState = ManagerUI.instance.menu.state;
         if (menuState === MenuState.Animal) {
+            if (this.m_animalFarm.hasDisposableAnimal()) {
+                ManagerUI.instance.menu.pig.setLocked(true); // hard code lock pig
+                await this.m_animalFarm.disposeAnimals(); // Dispose all animals which are not cow
+            }
             const hasEmptySlot = this.m_animalFarm.hasEmptyAnimalSlot();
             if (hasEmptySlot) {
                 ManagerUI.instance.showCowFarmAddingGuide();
@@ -141,6 +145,7 @@ export class Manager extends Component {
 
             // Show food menu of cow farm
             ManagerUI.instance.showCowFarmFodderMenu();
+            ManagerUI.instance.menu.pig.setLocked(false); // hard code unlock pig
         }
         else if (menuState === MenuState.Feed) {
             const hasEmptyFodderSlot = this.m_animalFarm.hasEmptyFodderSlot();

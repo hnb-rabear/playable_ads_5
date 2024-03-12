@@ -19,9 +19,21 @@ export class AnimalFarm extends Component {
 
     public hasEmptyAnimalSlot() {
         for (let i = 0; i < this.m_animals.length; i++) {
-            if (!this.m_animals[i].hasAnimal())
+            if (!this.m_animals[i].hasCorrectAnimal())
                 return true;
         }
+    }
+
+    public async disposeAnimals() {
+        await Promise.all(this.m_animals.map(animal => animal.dispose()));
+    }
+
+    public hasDisposableAnimal() {
+        for (let i = 0; i < this.m_animals.length; i++) {
+            if (this.m_animals[i].hasAnimal() && !this.m_animals[i].valid)
+                return true;
+        }
+        return false;
     }
 
     public hasEmptyFodderSlot() {

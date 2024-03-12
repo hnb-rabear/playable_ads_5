@@ -20,15 +20,6 @@ export class Animal extends Component {
     private readonly ANIM_PIG_S_DISAPPEAR = 'pig_s_disappear';
     private readonly ANIM_FOOD_APPEAR = 'food_appear';
 
-    private readonly ANIM_COW_S_APPEAR_IDX = 0;
-    private readonly ANIM_COW_S_IDLE_IDX = 1;
-    private readonly ANIM_COW_S_GROW_IDX = 2;
-    private readonly ANIM_COW_B_EAT_IDX = 3;
-    private readonly ANIM_PIG_S_APPEAR_IDX = 4;
-    private readonly ANIM_PIG_S_IDLE_IDX = 5;
-    private readonly ANIM_PIG_S_DISAPPEAR_IDX = 6;
-    private readonly ANIM_FOOD_APPEAR_IDX = 7;
-
     @property(CCInteger) protected m_id: number = 0;
     @property(sp.Skeleton) protected m_anim: sp.Skeleton = null;
     @property(Node) protected m_fodder: Node = null;
@@ -37,6 +28,7 @@ export class Animal extends Component {
     @property(Node) public spotProducts: Node;
 
     protected m_state: AnimalState;
+    protected m_valid: boolean = false;
 
     public get spotFodder() {
         return this.m_fodder;
@@ -44,6 +36,10 @@ export class Animal extends Component {
 
     public get id() {
         return this.m_id;
+    }
+
+    public get valid(): boolean {
+        return this.m_valid;
     }
 
     protected start(): void {
@@ -58,19 +54,40 @@ export class Animal extends Component {
         this.m_state = state;
     }
 
-    public addAnimal() {
+    public async addAnimal(name: string) {
         if (this.m_anim.node.active)
             return;
-        this.m_anim.node.active = true;
 
-        let trackEntry = this.m_anim.setAnimation(this.ANIM_COW_S_APPEAR_IDX, this.ANIM_COW_S_APPEAR, false);
-        // this.m_anim.setEndListener((entry) => {
-        //     console.log(entry.animation.name);
-        //     console.log(JSON.stringify(entry));
-        // });
-        setTimeout(() => {
-            this.m_anim.setAnimation(this.ANIM_COW_S_IDLE_IDX, this.ANIM_COW_S_IDLE, true);
-        }, 1000);
+        if (name === 'cow') {
+            this.m_valid = true;
+            this.m_anim.node.active = true;
+            this.m_anim.setAnimation(0, this.ANIM_COW_S_APPEAR, false);
+            this.m_anim.setCompleteListener(() => {
+                this.m_anim.setAnimation(0, this.ANIM_COW_S_IDLE, true);
+                this.m_anim.setCompleteListener(null);
+            });
+        } else if (name === "pig") {
+            this.m_anim.node.active = true;
+            this.m_anim.setAnimation(0, this.ANIM_PIG_S_APPEAR, false);
+            this.m_anim.setCompleteListener(() => {
+                this.m_anim.setAnimation(0, this.ANIM_PIG_S_IDLE, true);
+                this.m_anim.setCompleteListener(null);
+            });
+        }
+    }
+
+    public async dispose() {
+        if (this.m_valid)
+            return;
+        this.m_anim.setAnimation(0, this.ANIM_PIG_S_DISAPPEAR, false);
+        this.m_anim.setCompleteListener(() => {
+            this.m_anim.node.active = false;
+            this.m_anim.setCompleteListener(null);
+        });
+    }
+
+    public hasCorrectAnimal() {
+        return this.m_anim.node.active && this.m_valid;
     }
 
     public hasAnimal() {
@@ -89,10 +106,11 @@ export class Animal extends Component {
         if (this.m_fodder.active)
             return;
         this.m_fodder.active = true;
-        this.m_anim.setAnimation(this.ANIM_COW_S_GROW_IDX, this.ANIM_COW_S_GROW, false);
-        setTimeout(() => {
-            this.m_anim.setAnimation(this.ANIM_COW_B_EAT_IDX, this.ANIM_COW_B_EAT, true);
-        }, 2000);
+        this.m_anim.setAnimation(0, this.ANIM_COW_S_GROW, false);
+        this.m_anim.setCompleteListener(() => {
+            this.m_anim.setAnimation(0, this.ANIM_COW_B_EAT, true);
+            this.m_anim.setCompleteListener(null);
+        });
     }
 
     public createProducts() {

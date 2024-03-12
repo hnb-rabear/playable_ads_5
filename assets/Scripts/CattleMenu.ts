@@ -45,7 +45,7 @@ export class CattleMenu extends MenuBar {
     public setState(state: MenuState) {
         this.m_state = state;
         this.pig.node.active = state == MenuState.Animal && (this.m_animalId == "cow" || this.m_animalId == "chicken");
-        this.cow.node.active = state == MenuState.Animal && (this.m_animalId == "cow" || this.m_animalId == "chicken");
+        this.cow.node.active = state == MenuState.Animal && this.m_animalId == "cow";
         this.chicken.node.active = state == MenuState.Animal && this.m_animalId == "chicken";
         this.sheep.node.active = state == MenuState.Animal && this.m_animalId == "chicken";
         this.fodder.node.active = state == MenuState.Feed;

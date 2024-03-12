@@ -107,6 +107,7 @@ export class ManagerUI extends Component {
             }
         });
         this.m_pointerDragging.setPathWorldPos(pointerPath);
+        this.m_pointerDragging.setMinDuration(2);
         if (finished)
             this.m_pointerDragging.node.active = false;
     }
@@ -157,6 +158,7 @@ export class ManagerUI extends Component {
             }
         });
         this.m_pointerDragging.setPathWorldPos(pointerPath);
+        this.m_pointerDragging.setMinDuration(2);
         if (finished)
             this.m_pointerDragging.node.active = false;
     }
@@ -207,6 +209,7 @@ export class ManagerUI extends Component {
             }
         });
         this.m_pointerDragging.setPathWorldPos(pointerPath);
+        this.m_pointerDragging.setMinDuration(2);
         if (finished)
             this.m_pointerDragging.node.active = false;
     }
