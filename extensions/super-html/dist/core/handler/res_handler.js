@@ -1,13 +1,29 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
     return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const config_1 = __importDefault(require("../config/config"));
@@ -166,14 +182,8 @@ class res_handler {
                 break;
             }
             if (config_1.default.is_obfuscator) {
-                // 已知 polyfills.bundle.js 中有 <\/script> 会被混淆成 </script> 造成在html中识别成占位符，html无法运行
-                if (js.indexOf("/script>") == -1) {
-                    utils_1.default.debug("obfuscator", s_file_path, js.length);
-                    js = utils_1.default.obfuscate(js);
-                }
-                else {
-                    utils_1.default.debug("skip obfuscator", s_file_path, js.length);
-                }
+                utils_1.default.debug("obfuscator", s_file_path, js.length);
+                js = utils_1.default.obfuscate(js);
             }
             else {
                 if (config_1.default.is_min_js) {

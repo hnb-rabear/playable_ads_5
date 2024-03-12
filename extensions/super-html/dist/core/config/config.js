@@ -112,14 +112,6 @@ class config {
             },
             {
                 s_name: "google",
-                b_enable: true,
-                b_html_compression: false,
-                s_html_name: "index.html",
-                b_out_zip: true,
-                s_zip_name: "google.zip",
-            },
-            {
-                s_name: "google",
                 s_config_name: "google_portrait",
                 b_enable: true,
                 b_html_compression: false,
@@ -169,35 +161,6 @@ class config {
                 s_html_name: "index.html",
                 b_out_zip: true,
                 s_zip_name: "pangle_landscape.zip",
-            },
-            {
-                s_name: "liftoff",
-                b_enable: true,
-                b_html_compression: false,
-                s_html_name: "index.html",
-                b_out_zip: true,
-                s_zip_name: "liftoff.zip",
-            },
-            {
-                s_name: "moloco",
-                b_enable: true,
-                b_html_compression: true,
-            },
-            {
-                s_name: "tiktok",
-                b_enable: true,
-                b_html_compression: false,
-                s_html_name: "index.html",
-                b_out_zip: true,
-                s_zip_name: "tiktok.zip",
-            },
-            {
-                s_name: "vungle",
-                b_enable: true,
-                b_html_compression: false,
-                s_html_name: "index.html",
-                b_out_zip: true,
-                s_zip_name: "vungle.zip",
             },
         ];
         this.d_hot = new class {

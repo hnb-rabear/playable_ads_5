@@ -31,14 +31,12 @@ class main {
             return;
         }
         try {
-            new cocos_main_1.default(Editor.App.version, options.dest, () => {
-                callback();
-            });
+            new cocos_main_1.default(Editor.App.version, options.dest);
         }
         catch (error) {
             Editor.error(error);
-            callback();
         }
+        callback();
     }
 }
 module.exports = new main();
