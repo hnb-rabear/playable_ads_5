@@ -8650,7 +8650,7 @@
       "__expectedType__": "sp.SkeletonData"
     },
     "_premultipliedAlpha": false,
-    "defaultSkin": "",
+    "defaultSkin": "default",
     "defaultAnimation": "",
     "_enableBatch": false,
     "_sockets": [],
@@ -9917,7 +9917,7 @@
       "__expectedType__": "sp.SkeletonData"
     },
     "_premultipliedAlpha": false,
-    "defaultSkin": "",
+    "defaultSkin": "default",
     "defaultAnimation": "",
     "_enableBatch": false,
     "_sockets": [],
@@ -13434,7 +13434,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 539.9999999999999,
-      "y": 960,
+      "y": 959.9999999999999,
       "z": 0
     },
     "_lrot": {
@@ -15694,7 +15694,7 @@
       "__id__": 552
     },
     "_children": [],
-    "_active": false,
+    "_active": true,
     "_components": [
       {
         "__id__": 621
@@ -15767,7 +15767,7 @@
       "__uuid__": "cd6e2200-6c1c-4bee-92d6-f469f9b57238",
       "__expectedType__": "cc.AudioClip"
     },
-    "_loop": false,
+    "_loop": true,
     "_playOnAwake": true,
     "_volume": 1,
     "_id": "02b76idKpE+oYwpXyDRyms"
@@ -16485,8 +16485,8 @@
     "_target": null,
     "_left": -1.1368683772161603e-13,
     "_right": -1.1368683772161603e-13,
-    "_top": 0,
-    "_bottom": 0,
+    "_top": -1.1368683772161603e-13,
+    "_bottom": -1.1368683772161603e-13,
     "_horizontalCenter": 0,
     "_verticalCenter": 0,
     "_isAbsLeft": true,
