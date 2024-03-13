@@ -77,8 +77,12 @@ export class Manager extends Component {
 
     protected async showFarmCowMenu() {
         this.cameraController.activeCam1();
+        this.m_customers.forEach(customer => {
+            customer.setBubble(false);
+        });
         //Move car to destination 1
         await this.moveToStopNode(this.m_firstStop);
+        this.m_customers[0].setBubble(true);
         this.m_animalFarm = this.m_cowFarm;
         this.m_curCustomer = this.m_customers[0];
         ManagerUI.instance.showCowFarmMenu();
@@ -217,6 +221,7 @@ export class Manager extends Component {
 
         // Move car to destination 3
         await this.moveToStopNode(this.m_thirdStop);
+        this.m_customers[1].setBubble(true);
     }
 
     protected async createCoinsOnFarmChicken() {

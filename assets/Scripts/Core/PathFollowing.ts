@@ -9,7 +9,6 @@ export class PathFollowing extends Component {
     @property([Node]) protected m_pathNode: Node[] = [];
     @property([Vec3]) protected m_pathWorldPos: Vec3[] = [];
     @property(CCBoolean) protected m_debug: boolean = false;
-    @property(Line) protected m_debugLine: Line;
 
     @property({ readonly: true }) protected m_reached: boolean = false;
     public get reached(): boolean {
@@ -67,13 +66,6 @@ export class PathFollowing extends Component {
         this.m_maxDuration = 0;
         if (this.m_pathNode.length > 0) {
             this.node.setWorldPosition(this.m_pathNode[this.m_targetStopIndex].worldPosition);
-            if (this.m_debugLine) {
-                this.m_debugLine.node.active = this.m_debug;
-                if (this.m_debug) {
-                    var positions = this.m_pathNode.map((node) => node.worldPosition);
-                    this.m_debugLine.positions = positions as any;
-                }
-            }
         }
     }
 
@@ -90,12 +82,6 @@ export class PathFollowing extends Component {
         this.m_maxDuration = 0;
         if (this.m_pathWorldPos.length > 0) {
             this.node.setWorldPosition(this.m_pathWorldPos[this.m_targetStopIndex]);
-            if (this.m_debugLine) {
-                this.m_debugLine.node.active = this.m_debug;
-                if (this.m_debug) {
-                    this.m_debugLine.positions = this.m_pathWorldPos as any;
-                }
-            }
         }
     }
 

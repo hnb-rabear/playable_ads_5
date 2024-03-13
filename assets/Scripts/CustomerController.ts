@@ -1,4 +1,4 @@
-import { _decorator, CCInteger, Component, math, Node, tween, Vec3 } from 'cc';
+import { _decorator, CCInteger, Component, math, Node, Sprite, tween, Vec3 } from 'cc';
 import { PathFollowing } from './Core/PathFollowing';
 const { ccclass, property } = _decorator;
 
@@ -9,6 +9,9 @@ export class CustomerController extends PathFollowing {
   @property([Node]) protected m_backContainers: Node[] = [];
   @property([Node]) protected m_frontContainers: Node[] = [];
   @property(CCInteger) protected m_capacity = 12;
+  @property(Node) protected m_bubbleWait: Node;
+  @property(Node) protected m_bubbleRequest: Node;
+  @property(Sprite) protected m_bubbleRequestFill: Sprite;
 
   protected m_value: number = 0;
 
@@ -27,6 +30,23 @@ export class CustomerController extends PathFollowing {
     this.m_bodyFront.active = front;
     this.m_bodyBack.active = !front;
     this.node.scale = new Vec3(this.m_direction.x > 0 ? 1 : -1, 1, 1);
+  }
+
+  public setBubble(active: boolean) {
+    if (this.m_bubbleRequest) {
+      if (active && !this.m_bubbleRequest.active) {
+        this.m_bubbleRequest.setScale(new Vec3(0, 0, 0));
+        tween(this.m_bubbleRequest)
+          .to(0.2, { scale: new Vec3(1, 1, 1) }, {
+            easing: 'quartOut',
+          })
+          .start();
+      }
+      this.m_bubbleRequest.active = active;
+    }
+    if (this.m_bubbleWait) {
+      this.m_bubbleWait.active = !active;
+    }
   }
 
   public addProduct() {
@@ -61,6 +81,8 @@ export class CustomerController extends PathFollowing {
       }
       container.active = active;
     });
+    if (this.m_bubbleRequestFill)
+      this.m_bubbleRequestFill.fillRange = this.m_value / this.m_capacity;
   }
 
   public getContainer() {
